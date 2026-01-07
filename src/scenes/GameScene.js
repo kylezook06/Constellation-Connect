@@ -18,6 +18,7 @@ class GameScene extends Phaser.Scene {
     this.linesGfx = null;
     this.hintGfx = null;
     this.starsGfx = null;
+    this.drawnSegments = null;
 
     this.roundOver = false;
   }
@@ -180,12 +181,32 @@ class GameScene extends Phaser.Scene {
     return pick;
   }
 
+  _getSeenMap() {
+    return this.registry.get("seenConstellations") || {};
+  }
+
+  _isSeen(id) {
+    const seen = this._getSeenMap();
+    return !!seen[id];
+  }
+
+  _markSeen(id) {
+    const seen = this._getSeenMap();
+    if (!seen[id]) {
+      seen[id] = true;
+      this.registry.set("seenConstellations", seen);
+    }
+  }
+
   _emitRoundData() {
+    const hardMode = !!this.registry.get("hardMode");
+    const revealed = !hardMode || this._isSeen(this.constellation.id);
     const payload = {
       id: this.constellation.id,
       name: this.constellation.name,
       season: this.constellation.season,
-      info: this.constellation.info
+      info: this.constellation.info,
+      revealed
     };
 
     this.registry.set("currentRound", payload);
@@ -235,6 +256,75 @@ class GameScene extends Phaser.Scene {
   }
 
   // ---------- Gameplay ----------
+  _segmentsIntersect(a, b, c, d) {
+    const orient = (p, q, r) => {
+      const v = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
+      if (Math.abs(v) < 1e-9) return 0;
+      return v > 0 ? 1 : 2;
+    };
+
+    const onSeg = (p, q, r) => (
+      q.x <= Math.max(p.x, r.x) + 1e-9 &&
+      q.x >= Math.min(p.x, r.x) - 1e-9 &&
+      q.y <= Math.max(p.y, r.y) + 1e-9 &&
+      q.y >= Math.min(p.y, r.y) - 1e-9
+    );
+
+    const o1 = orient(a, b, c);
+    const o2 = orient(a, b, d);
+    const o3 = orient(c, d, a);
+    const o4 = orient(c, d, b);
+
+    if (o1 !== o2 && o3 !== o4) return true;
+
+    if (o1 === 0 && onSeg(a, c, b)) return true;
+    if (o2 === 0 && onSeg(a, d, b)) return true;
+    if (o3 === 0 && onSeg(c, a, d)) return true;
+    if (o4 === 0 && onSeg(c, b, d)) return true;
+
+    return false;
+  }
+
+  _wouldCrossExisting(aId, bId) {
+    const A = this.starMap.get(aId);
+    const B = this.starMap.get(bId);
+    if (!A || !B) return false;
+
+    const a = { x: A.x, y: A.y };
+    const b = { x: B.x, y: B.y };
+
+    for (const s of this.drawnSegments) {
+      if (s.aId === aId || s.bId === aId || s.aId === bId || s.bId === bId) continue;
+
+      const c = { x: s.ax, y: s.ay };
+      const d = { x: s.bx, y: s.by };
+
+      if (this._segmentsIntersect(a, b, c, d)) return true;
+    }
+
+    return false;
+  }
+
+  _flashAttemptLine(aId, bId, color = 0xff5c7a) {
+    const A = this.starMap.get(aId);
+    const B = this.starMap.get(bId);
+    if (!A || !B) return;
+
+    const g = this.add.graphics();
+    g.lineStyle(4, color, 1);
+    g.beginPath();
+    g.moveTo(A.x, A.y);
+    g.lineTo(B.x, B.y);
+    g.strokePath();
+
+    this.tweens.add({
+      targets: g,
+      alpha: 0,
+      duration: 250,
+      onComplete: () => g.destroy()
+    });
+  }
+
   _onStarClicked(starId) {
     // First click selects
     if (!this.selectedStarId) {
@@ -258,6 +348,18 @@ class GameScene extends Phaser.Scene {
       return;
     }
 
+    // Crossing-lines penalty
+    if (this._wouldCrossExisting(a, b)) {
+      this._addMistake(1);
+      this._addScore(-50);
+      this._flashAttemptLine(a, b);
+
+      this._setSelectedVisual(this.selectedStarId, false);
+      this.selectedStarId = starId;
+      this._setSelectedVisual(this.selectedStarId, true);
+      return;
+    }
+
     // Determine correctness
     const isRequired = this.requiredEdges.has(key);
 
@@ -270,6 +372,12 @@ class GameScene extends Phaser.Scene {
       this._addMistake(1);
       this._addScore(-25);
       this._drawEdge(a, b, false);
+    }
+
+    const A = this.starMap.get(a);
+    const B = this.starMap.get(b);
+    if (A && B) {
+      this.drawnSegments.push({ aId: a, bId: b, ax: A.x, ay: A.y, bx: B.x, by: B.y });
     }
 
     // move selection to new star
@@ -382,10 +490,13 @@ class GameScene extends Phaser.Scene {
     if (this.selectedStarId) this._setSelectedVisual(this.selectedStarId, false);
     this.selectedStarId = null;
 
+    this._markSeen(this.constellation.id);
+
     this.game.events.emit("roundComplete", {
       id: this.constellation.id,
       name: this.constellation.name,
       info: this.constellation.info,
+      revealed: true,
       score: this.registry.get("score") || 0,
       mistakes: this.registry.get("mistakes") || 0
     });
@@ -399,6 +510,7 @@ class GameScene extends Phaser.Scene {
 
     this.correctEdges.clear();
     this.wrongEdges.clear();
+    this.drawnSegments = [];
 
     this.linesGfx.clear();
 
@@ -426,6 +538,7 @@ class GameScene extends Phaser.Scene {
 
     if (this.linesGfx) this.linesGfx.clear();
     if (this.hintGfx) this.hintGfx.clear();
+    this.drawnSegments = [];
 
     this.roundOver = false;
     this.selectedStarId = null;

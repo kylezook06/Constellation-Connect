@@ -43,7 +43,7 @@ class BootScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // UI helper
-    const makeButton = (x, y, label, onClick) => {
+    const makeButton = (x, y, label, onClick, opts = {}) => {
       const padX = 18;
       const padY = 10;
 
@@ -54,14 +54,17 @@ class BootScene extends Phaser.Scene {
       }).setOrigin(0.5);
 
       const bounds = txt.getBounds();
+      const fill = opts.fill ?? 0x263055;
+      const stroke = opts.stroke ?? 0x7c8cff;
+
       const bgRect = this.add.rectangle(
         x,
         y,
         bounds.width + padX * 2,
         bounds.height + padY * 2,
-        0x263055,
+        fill,
         1
-      ).setStrokeStyle(2, 0x7c8cff, 0.8);
+      ).setStrokeStyle(2, stroke, 0.8);
 
       // Put text above rect
       txt.setDepth(1);
@@ -81,87 +84,88 @@ class BootScene extends Phaser.Scene {
     };
 
     // Season selection
-    this.add.text(W / 2, 170, "Season Pack", {
+    this.add.text(W / 2, 160, "Season Pack", {
       fontFamily: "Arial, sans-serif",
       fontSize: "18px",
       color: "#ffffff"
     }).setOrigin(0.5);
 
-    const seasonLabel = this.add.text(W / 2, 200, "Selected: WINTER", {
+    const seasonLabel = this.add.text(W / 2, 190, "Selected: WINTER", {
       fontFamily: "Arial, sans-serif",
       fontSize: "14px",
       color: "#cbd5ff"
     }).setOrigin(0.5);
 
-    makeButton(W / 2 - 120, 245, "Winter", () => {
+    makeButton(W / 2 - 120, 230, "Winter", () => {
       this.registry.set("season", "winter");
       seasonLabel.setText("Selected: WINTER");
     });
 
-    makeButton(W / 2 + 120, 245, "Summer", () => {
+    makeButton(W / 2 + 120, 230, "Summer", () => {
       this.registry.set("season", "summer");
       seasonLabel.setText("Selected: SUMMER");
     });
 
     // Mode selection
-    this.add.text(W / 2, 300, "Mode", {
+    this.add.text(W / 2, 280, "Mode", {
       fontFamily: "Arial, sans-serif",
       fontSize: "18px",
       color: "#ffffff"
     }).setOrigin(0.5);
 
-    const modeLabel = this.add.text(W / 2, 330, "Selected: RELAXED", {
+    const modeLabel = this.add.text(W / 2, 310, "Selected: RELAXED", {
       fontFamily: "Arial, sans-serif",
       fontSize: "14px",
       color: "#cbd5ff"
     }).setOrigin(0.5);
 
-    makeButton(W / 2 - 120, 375, "Relaxed", () => {
+    makeButton(W / 2 - 120, 350, "Relaxed", () => {
       this.registry.set("mode", "relaxed");
       modeLabel.setText("Selected: RELAXED");
     });
 
-    makeButton(W / 2 + 120, 375, "Timed (2:00)", () => {
+    makeButton(W / 2 + 120, 350, "Timed (2:00)", () => {
       this.registry.set("mode", "timed");
       this.registry.set("timeLimitSec", 120);
       modeLabel.setText("Selected: TIMED (2:00)");
     });
 
     // Difficulty selection
-    this.add.text(W / 2, 380, "Difficulty", {
+    this.add.text(W / 2, 400, "Difficulty", {
       fontFamily: "Arial, sans-serif",
       fontSize: "18px",
       color: "#ffffff"
     }).setOrigin(0.5);
 
-    const difficultyLabel = this.add.text(W / 2, 405, "Selected: STANDARD", {
+    const difficultyLabel = this.add.text(W / 2, 430, "Selected: STANDARD", {
       fontFamily: "Arial, sans-serif",
       fontSize: "14px",
       color: "#cbd5ff"
     }).setOrigin(0.5);
 
-    makeButton(W / 2 - 120, 435, "Standard", () => {
+    makeButton(W / 2 - 120, 470, "Standard", () => {
       this.registry.set("hardMode", false);
       difficultyLabel.setText("Selected: STANDARD");
     });
 
-    makeButton(W / 2 + 120, 435, "Hard", () => {
+    makeButton(W / 2 + 120, 470, "Hard", () => {
       this.registry.set("hardMode", true);
       difficultyLabel.setText("Selected: HARD");
     });
 
     // Start
-    makeButton(W / 2, 485, "Start", () => {
+    makeButton(W / 2, 510, "Start", () => {
       // Reset shared state
       this.registry.set("score", 0);
       this.registry.set("mistakes", 0);
+      this.registry.set("seenConstellations", {});
 
       // Start gameplay + HUD
       this.scene.start("GameScene");
       this.scene.start("UIScene");
-    });
+    }, { fill: 0x1f6f3b, stroke: 0x9cffb5 });
 
-    this.add.text(W / 2, H - 24, "Mouse: click stars to connect • Reset anytime • Hint + Info in HUD", {
+    this.add.text(W / 2, H - 20, "Click stars to connect • Reset anytime • Hint + Info in HUD", {
       fontFamily: "Arial, sans-serif",
       fontSize: "12px",
       color: "#9aa7ff"

@@ -28,6 +28,8 @@ class UIScene extends Phaser.Scene {
 
     this._hudTitle = null;
     this._hintBtn = null;
+    this._infoBtn = null;
+    this._infoLocked = false;
   }
 
   create() {
@@ -44,8 +46,8 @@ class UIScene extends Phaser.Scene {
     // Top HUD bar
     this.add.rectangle(W / 2, 22, W, 44, 0x10183a, 0.85);
 
-    const lineOneY = 6;
-    const lineTwoY = 24;
+    const lineOneY = 4;
+    const lineTwoY = 20;
 
     // Title (constellation name shown upfront)
     this._hudTitle = this.add.text(16, lineOneY, this.hardMode ? "Constellation: ???" : "Constellation: ...", {
@@ -127,7 +129,8 @@ class UIScene extends Phaser.Scene {
       this.game.events.emit("uiToggleHint", false);
     }
 
-    makeTinyButton(W - 110, buttonY, "Info", () => {
+    this._infoBtn = makeTinyButton(W - 110, buttonY, "Info", () => {
+      if (this._infoLocked) return;
       this._toggleInfoPanel();
     });
 
@@ -165,10 +168,13 @@ class UIScene extends Phaser.Scene {
     this._onRoundData = (data) => {
       this.roundName = data.name;
       this.roundInfo = data.info;
-      if (this.hardMode) {
+      const revealed = !!data.revealed;
+      if (this.hardMode && !revealed) {
         this._hudTitle.setText("Constellation: ???");
+        this._setInfoLocked(true);
       } else {
         this._hudTitle.setText(`Constellation: ${this.roundName}`);
+        this._setInfoLocked(false);
       }
       this._refreshInfoText();
     };
@@ -226,6 +232,26 @@ class UIScene extends Phaser.Scene {
     this.infoOpen = !this.infoOpen;
     this.infoPanel.setVisible(this.infoOpen);
     this._refreshInfoText();
+  }
+
+  _setInfoLocked(locked) {
+    this._infoLocked = locked;
+
+    if (!this._infoBtn) return;
+
+    const alpha = locked ? 0.35 : 1;
+    this._infoBtn.rect.setAlpha(alpha);
+    this._infoBtn.txt.setAlpha(alpha);
+
+    this._infoBtn.hit.disableInteractive();
+    if (!locked) {
+      this._infoBtn.hit.setInteractive({ useHandCursor: true });
+    }
+
+    if (locked) {
+      this.infoOpen = false;
+      if (this.infoPanel) this.infoPanel.setVisible(false);
+    }
   }
 
   _refreshInfoText() {
