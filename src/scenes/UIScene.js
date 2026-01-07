@@ -23,6 +23,11 @@ class UIScene extends Phaser.Scene {
     this._onRoundData = null;
     this._onScoreChanged = null;
     this._onRoundComplete = null;
+
+    this.hardMode = false;
+
+    this._hudTitle = null;
+    this._hintBtn = null;
   }
 
   create() {
@@ -34,32 +39,36 @@ class UIScene extends Phaser.Scene {
     this.mode = this.registry.get("mode") || "relaxed";
     const timeLimit = this.registry.get("timeLimitSec") || 120;
     this.timeLeft = timeLimit;
+    this.hardMode = !!this.registry.get("hardMode");
 
     // Top HUD bar
     this.add.rectangle(W / 2, 22, W, 44, 0x10183a, 0.85);
 
+    const lineOneY = 6;
+    const lineTwoY = 24;
+
     // Title (constellation name shown upfront)
-    const title = this.add.text(16, 10, "Constellation: ...", {
+    this._hudTitle = this.add.text(16, lineOneY, this.hardMode ? "Constellation: ???" : "Constellation: ...", {
       fontFamily: "Arial, sans-serif",
       fontSize: "16px",
       color: "#ffffff"
     });
 
     // Score & progress
-    this.scoreText = this.add.text(340, 10, "Score: 0 | Mistakes: 0", {
+    this.scoreText = this.add.text(340, lineOneY, "Score: 0 | Mistakes: 0", {
       fontFamily: "Arial, sans-serif",
       fontSize: "16px",
       color: "#cbd5ff"
     });
 
-    this.progressText = this.add.text(16, 34, "Connections: 0/0", {
+    this.progressText = this.add.text(16, lineTwoY, "Connections: 0/0", {
       fontFamily: "Arial, sans-serif",
       fontSize: "12px",
       color: "#9aa7ff"
     });
 
     // Timer (timed mode only)
-    this.timerText = this.add.text(W - 380, 10, "", {
+    this.timerText = this.add.text(W - 380, lineOneY, "", {
       fontFamily: "Arial, sans-serif",
       fontSize: "16px",
       color: "#ffd166"
@@ -81,7 +90,7 @@ class UIScene extends Phaser.Scene {
       }).setOrigin(0.5);
 
       const padX = 12;
-      const padY = 7;
+      const padY = 5;
       const b = txt.getBounds();
 
       const rect = this.add.rectangle(x, y, b.width + padX * 2, b.height + padY * 2, 0x263055, 1)
@@ -99,23 +108,30 @@ class UIScene extends Phaser.Scene {
       return { rect, txt, hit };
     };
 
-    makeTinyButton(W - 280, 34, "Reset", () => {
+    const buttonY = lineTwoY;
+
+    makeTinyButton(W - 280, buttonY, "Reset", () => {
       if (this.roundEnded) return;
       this.game.events.emit("uiReset");
     });
 
-    const hintBtn = makeTinyButton(W - 200, 34, "Hint: OFF", () => {
-      if (this.roundEnded) return;
-      this.hintOn = !this.hintOn;
-      hintBtn.txt.setText(this.hintOn ? "Hint: ON" : "Hint: OFF");
-      this.game.events.emit("uiToggleHint", this.hintOn);
-    });
+    if (!this.hardMode) {
+      this._hintBtn = makeTinyButton(W - 200, buttonY, "Hint: OFF", () => {
+        if (this.roundEnded) return;
+        this.hintOn = !this.hintOn;
+        this._hintBtn.txt.setText(this.hintOn ? "Hint: ON" : "Hint: OFF");
+        this.game.events.emit("uiToggleHint", this.hintOn);
+      });
+    } else {
+      this.hintOn = false;
+      this.game.events.emit("uiToggleHint", false);
+    }
 
-    const infoBtn = makeTinyButton(W - 110, 34, "Info", () => {
+    makeTinyButton(W - 110, buttonY, "Info", () => {
       this._toggleInfoPanel();
     });
 
-    makeTinyButton(W - 40, 34, "Menu", () => {
+    makeTinyButton(W - 40, buttonY, "Menu", () => {
       this.game.events.emit("uiNext"); // returns to BootScene
     });
 
@@ -149,7 +165,11 @@ class UIScene extends Phaser.Scene {
     this._onRoundData = (data) => {
       this.roundName = data.name;
       this.roundInfo = data.info;
-      title.setText(`Constellation: ${this.roundName}`);
+      if (this.hardMode) {
+        this._hudTitle.setText("Constellation: ???");
+      } else {
+        this._hudTitle.setText(`Constellation: ${this.roundName}`);
+      }
       this._refreshInfoText();
     };
 
@@ -279,14 +299,14 @@ class UIScene extends Phaser.Scene {
       return { rect, txt, hit };
     };
 
-    const btnReset = makeOverlayButton(W / 2 - 120, H / 2 + 85, "Try Again", () => {
+    const btnReset = makeOverlayButton(0, H / 2 + 85, "Try Again", () => {
       this.overlay.destroy(true);
       this.overlay = null;
       this.roundEnded = false;
       this.game.events.emit("uiReset");
     });
 
-    const btnNext = makeOverlayButton(W / 2 + 80, H / 2 + 85, "Next", () => {
+    const btnNext = makeOverlayButton(0, H / 2 + 85, "Next", () => {
       this.overlay.destroy(true);
       this.overlay = null;
       this.roundEnded = false;
@@ -300,9 +320,21 @@ class UIScene extends Phaser.Scene {
       this.game.events.emit("uiNextConstellation");
     });
 
-    const btnMenu = makeOverlayButton(W / 2 + 220, H / 2 + 85, "Menu", () => {
+    const btnMenu = makeOverlayButton(0, H / 2 + 85, "Menu", () => {
       this.game.events.emit("uiNext");
     });
+
+    const overlayButtons = [btnReset, btnNext, btnMenu];
+    const totalOverlayWidth = overlayButtons.reduce((sum, btn) => sum + btn.rect.width, 0) + 22 * (overlayButtons.length - 1);
+    let overlayX = W / 2 - totalOverlayWidth / 2;
+    for (const btn of overlayButtons) {
+      const half = btn.rect.width / 2;
+      const x = overlayX + half;
+      btn.rect.setPosition(x, H / 2 + 85);
+      btn.txt.setPosition(x, H / 2 + 85);
+      btn.hit.setPosition(x, H / 2 + 85);
+      overlayX += btn.rect.width + 22;
+    }
 
     this.overlay.add([
       dim,
@@ -386,7 +418,7 @@ class UIScene extends Phaser.Scene {
       return { rect, txt, hit };
     };
 
-    const btnReset = makeOverlayButton(W / 2 - 120, H / 2 + 75, "Try Again", () => {
+    const btnReset = makeOverlayButton(0, H / 2 + 75, "Try Again", () => {
       this.overlay.destroy(true);
       this.overlay = null;
       this.roundEnded = false;
@@ -397,7 +429,7 @@ class UIScene extends Phaser.Scene {
       this.game.events.emit("uiReset");
     });
 
-    const btnNext = makeOverlayButton(W / 2 + 80, H / 2 + 75, "Next", () => {
+    const btnNext = makeOverlayButton(0, H / 2 + 75, "Next", () => {
       this.overlay.destroy(true);
       this.overlay = null;
       this.roundEnded = false;
@@ -409,9 +441,21 @@ class UIScene extends Phaser.Scene {
       this.game.events.emit("uiNextConstellation");
     });
 
-    const btnMenu = makeOverlayButton(W / 2 + 220, H / 2 + 75, "Menu", () => {
+    const btnMenu = makeOverlayButton(0, H / 2 + 75, "Menu", () => {
       this.game.events.emit("uiNext");
     });
+
+    const timeButtons = [btnReset, btnNext, btnMenu];
+    const totalTimeWidth = timeButtons.reduce((sum, btn) => sum + btn.rect.width, 0) + 22 * (timeButtons.length - 1);
+    let timeX = W / 2 - totalTimeWidth / 2;
+    for (const btn of timeButtons) {
+      const half = btn.rect.width / 2;
+      const x = timeX + half;
+      btn.rect.setPosition(x, H / 2 + 75);
+      btn.txt.setPosition(x, H / 2 + 75);
+      btn.hit.setPosition(x, H / 2 + 75);
+      timeX += btn.rect.width + 22;
+    }
 
     this.overlay.add([
       dim,

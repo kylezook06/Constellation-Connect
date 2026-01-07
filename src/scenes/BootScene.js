@@ -10,6 +10,7 @@ class BootScene extends Phaser.Scene {
     this.registry.set("season", "winter");
     this.registry.set("mode", "relaxed"); // "relaxed" | "timed"
     this.registry.set("timeLimitSec", 120);
+    this.registry.set("hardMode", false);
 
     const W = this.scale.width;
     const H = this.scale.height;
@@ -126,8 +127,31 @@ class BootScene extends Phaser.Scene {
       modeLabel.setText("Selected: TIMED (2:00)");
     });
 
+    // Difficulty selection
+    this.add.text(W / 2, 380, "Difficulty", {
+      fontFamily: "Arial, sans-serif",
+      fontSize: "18px",
+      color: "#ffffff"
+    }).setOrigin(0.5);
+
+    const difficultyLabel = this.add.text(W / 2, 405, "Selected: STANDARD", {
+      fontFamily: "Arial, sans-serif",
+      fontSize: "14px",
+      color: "#cbd5ff"
+    }).setOrigin(0.5);
+
+    makeButton(W / 2 - 120, 435, "Standard", () => {
+      this.registry.set("hardMode", false);
+      difficultyLabel.setText("Selected: STANDARD");
+    });
+
+    makeButton(W / 2 + 120, 435, "Hard", () => {
+      this.registry.set("hardMode", true);
+      difficultyLabel.setText("Selected: HARD");
+    });
+
     // Start
-    makeButton(W / 2, 450, "Start", () => {
+    makeButton(W / 2, 485, "Start", () => {
       // Reset shared state
       this.registry.set("score", 0);
       this.registry.set("mistakes", 0);
