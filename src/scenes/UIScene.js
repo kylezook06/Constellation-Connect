@@ -59,7 +59,7 @@ class UIScene extends Phaser.Scene {
     });
 
     // Timer (timed mode only)
-    this.timerText = this.add.text(W - 16, 10, "", {
+    this.timerText = this.add.text(W - 380, 10, "", {
       fontFamily: "Arial, sans-serif",
       fontSize: "16px",
       color: "#ffd166"
@@ -99,39 +99,23 @@ class UIScene extends Phaser.Scene {
       return { rect, txt, hit };
     };
 
-    makeTinyButton(W - 330, 34, "Reset", () => {
+    makeTinyButton(W - 280, 34, "Reset", () => {
       if (this.roundEnded) return;
       this.game.events.emit("uiReset");
     });
 
-    const hintBtn = makeTinyButton(W - 250, 34, "Hint: OFF", () => {
+    const hintBtn = makeTinyButton(W - 200, 34, "Hint: OFF", () => {
       if (this.roundEnded) return;
       this.hintOn = !this.hintOn;
       hintBtn.txt.setText(this.hintOn ? "Hint: ON" : "Hint: OFF");
       this.game.events.emit("uiToggleHint", this.hintOn);
     });
 
-    const infoBtn = makeTinyButton(W - 160, 34, "Info", () => {
+    const infoBtn = makeTinyButton(W - 110, 34, "Info", () => {
       this._toggleInfoPanel();
     });
 
-    makeTinyButton(W - 90, 34, "Next", () => {
-      if (this.overlay) {
-        this.overlay.destroy(true);
-        this.overlay = null;
-      }
-      this.roundEnded = false;
-
-      if (this.mode === "timed") {
-        const timeLimit = this.registry.get("timeLimitSec") || 120;
-        this.timeLeft = timeLimit;
-        this.timerText.setText("Time: " + this._formatTime(this.timeLeft));
-      }
-
-      this.game.events.emit("uiNextConstellation");
-    });
-
-    makeTinyButton(W - 30, 34, "Menu", () => {
+    makeTinyButton(W - 40, 34, "Menu", () => {
       this.game.events.emit("uiNext"); // returns to BootScene
     });
 
@@ -182,6 +166,11 @@ class UIScene extends Phaser.Scene {
     this.game.events.on("roundData", this._onRoundData);
     this.game.events.on("scoreChanged", this._onScoreChanged);
     this.game.events.on("roundComplete", this._onRoundComplete);
+
+    const current = this.registry.get("currentRound");
+    if (current) {
+      this._onRoundData(current);
+    }
 
     this.events.once("shutdown", this._cleanup, this);
     this.events.once("destroy", this._cleanup, this);
@@ -256,7 +245,8 @@ class UIScene extends Phaser.Scene {
         color: "#cbd5ff"
       }).setOrigin(0.5);
 
-    const info = this.add.text(W / 2, H / 2 + 10, this.roundInfo ? this.roundInfo.funFact : "", {
+    const funFact = data && data.info ? data.info.funFact : "";
+    const info = this.add.text(W / 2, H / 2 + 10, funFact, {
       fontFamily: "Arial, sans-serif",
       fontSize: "14px",
       color: "#9aa7ff",
@@ -296,7 +286,21 @@ class UIScene extends Phaser.Scene {
       this.game.events.emit("uiReset");
     });
 
-    const btnNext = makeOverlayButton(W / 2 + 120, H / 2 + 85, "Next / Menu", () => {
+    const btnNext = makeOverlayButton(W / 2 + 80, H / 2 + 85, "Next", () => {
+      this.overlay.destroy(true);
+      this.overlay = null;
+      this.roundEnded = false;
+
+      if (this.mode === "timed") {
+        const timeLimit = this.registry.get("timeLimitSec") || 120;
+        this.timeLeft = timeLimit;
+        this.timerText.setText("Time: " + this._formatTime(this.timeLeft));
+      }
+
+      this.game.events.emit("uiNextConstellation");
+    });
+
+    const btnMenu = makeOverlayButton(W / 2 + 220, H / 2 + 85, "Menu", () => {
       this.game.events.emit("uiNext");
     });
 
@@ -311,7 +315,10 @@ class UIScene extends Phaser.Scene {
       btnReset.txt,
       btnNext.rect,
       btnNext.hit,
-      btnNext.txt
+      btnNext.txt,
+      btnMenu.rect,
+      btnMenu.hit,
+      btnMenu.txt
     ]);
   }
 
@@ -345,7 +352,8 @@ class UIScene extends Phaser.Scene {
         wordWrap: { width: cardW - 50 }
       }).setOrigin(0.5);
 
-    const info = this.add.text(W / 2, H / 2 + 10, this.roundInfo ? this.roundInfo.funFact : "", {
+    const funFact = this.roundInfo ? this.roundInfo.funFact : "";
+    const info = this.add.text(W / 2, H / 2 + 10, funFact, {
       fontFamily: "Arial, sans-serif",
       fontSize: "14px",
       color: "#9aa7ff",
@@ -389,7 +397,19 @@ class UIScene extends Phaser.Scene {
       this.game.events.emit("uiReset");
     });
 
-    const btnNext = makeOverlayButton(W / 2 + 120, H / 2 + 75, "Next / Menu", () => {
+    const btnNext = makeOverlayButton(W / 2 + 80, H / 2 + 75, "Next", () => {
+      this.overlay.destroy(true);
+      this.overlay = null;
+      this.roundEnded = false;
+
+      const timeLimit = this.registry.get("timeLimitSec") || 120;
+      this.timeLeft = timeLimit;
+      this.timerText.setText("Time: " + this._formatTime(this.timeLeft));
+
+      this.game.events.emit("uiNextConstellation");
+    });
+
+    const btnMenu = makeOverlayButton(W / 2 + 220, H / 2 + 75, "Menu", () => {
       this.game.events.emit("uiNext");
     });
 
@@ -404,7 +424,10 @@ class UIScene extends Phaser.Scene {
       btnReset.txt,
       btnNext.rect,
       btnNext.hit,
-      btnNext.txt
+      btnNext.txt,
+      btnMenu.rect,
+      btnMenu.hit,
+      btnMenu.txt
     ]);
   }
 

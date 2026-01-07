@@ -17,6 +17,7 @@ class GameScene extends Phaser.Scene {
 
     this.linesGfx = null;
     this.hintGfx = null;
+    this.starsGfx = null;
 
     this.roundOver = false;
   }
@@ -180,11 +181,16 @@ class GameScene extends Phaser.Scene {
   }
 
   _emitRoundData() {
-    this.game.events.emit("roundData", {
+    const payload = {
+      id: this.constellation.id,
       name: this.constellation.name,
       season: this.constellation.season,
       info: this.constellation.info
-    });
+    };
+
+    this.registry.set("currentRound", payload);
+
+    this.game.events.emit("roundData", payload);
   }
 
   // ---------- Phaser lifecycle ----------
@@ -210,7 +216,7 @@ class GameScene extends Phaser.Scene {
     this._startNewRound(first);
 
     // Instructions overlay (light)
-    this.add.text(16, H - 24, "Click stars to connect them. Complete all required connections (any order).", {
+    this.add.text(16, H - 24, "Trace the traditional constellation outline by connecting the correct star pairs (any order).", {
       fontFamily: "Arial, sans-serif",
       fontSize: "12px",
       color: "#9aa7ff"
@@ -377,7 +383,9 @@ class GameScene extends Phaser.Scene {
     this.selectedStarId = null;
 
     this.game.events.emit("roundComplete", {
+      id: this.constellation.id,
       name: this.constellation.name,
+      info: this.constellation.info,
       score: this.registry.get("score") || 0,
       mistakes: this.registry.get("mistakes") || 0
     });
@@ -432,7 +440,11 @@ class GameScene extends Phaser.Scene {
       this.requiredEdges.add(this._edgeKey(a, b));
     }
 
-    const starsGfx = this.add.graphics();
+    if (this.starsGfx) {
+      this.starsGfx.destroy();
+    }
+    this.starsGfx = this.add.graphics();
+    const starsGfx = this.starsGfx;
 
     for (const s of this.constellation.stars) {
       starsGfx.fillStyle(0xffffff, 0.08);
