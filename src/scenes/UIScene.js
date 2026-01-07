@@ -19,6 +19,10 @@ class UIScene extends Phaser.Scene {
     this.roundEnded = false;
 
     this.overlay = null;
+
+    this._onRoundData = null;
+    this._onScoreChanged = null;
+    this._onRoundComplete = null;
   }
 
   create() {
@@ -142,22 +146,29 @@ class UIScene extends Phaser.Scene {
     this.infoPanel.setVisible(false);
 
     // Listen for GameScene events
-    this.game.events.on("roundData", (data) => {
+    this._onRoundData = (data) => {
       this.roundName = data.name;
       this.roundInfo = data.info;
       title.setText(`Constellation: ${this.roundName}`);
       this._refreshInfoText();
-    });
+    };
 
-    this.game.events.on("scoreChanged", (data) => {
+    this._onScoreChanged = (data) => {
       this.scoreText.setText(`Score: ${data.score} | Mistakes: ${data.mistakes}`);
       this.progressText.setText(`Connections: ${data.done}/${data.total}`);
-    });
+    };
 
-    this.game.events.on("roundComplete", (data) => {
+    this._onRoundComplete = (data) => {
       this.roundEnded = true;
       this._showCompleteOverlay(data);
-    });
+    };
+
+    this.game.events.on("roundData", this._onRoundData);
+    this.game.events.on("scoreChanged", this._onScoreChanged);
+    this.game.events.on("roundComplete", this._onRoundComplete);
+
+    this.events.once("shutdown", this._cleanup, this);
+    this.events.once("destroy", this._cleanup, this);
 
     // Timed mode countdown
     if (this.mode === "timed") {
@@ -379,5 +390,21 @@ class UIScene extends Phaser.Scene {
       btnNext.hit,
       btnNext.txt
     ]);
+  }
+
+  _cleanup() {
+    if (this.game && this.game.events) {
+      if (this._onRoundData) this.game.events.off("roundData", this._onRoundData);
+      if (this._onScoreChanged) this.game.events.off("scoreChanged", this._onScoreChanged);
+      if (this._onRoundComplete) this.game.events.off("roundComplete", this._onRoundComplete);
+    }
+
+    if (this.time) {
+      this.time.removeAllEvents();
+    }
+
+    this._onRoundData = null;
+    this._onScoreChanged = null;
+    this._onRoundComplete = null;
   }
 }
