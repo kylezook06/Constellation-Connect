@@ -99,23 +99,39 @@ class UIScene extends Phaser.Scene {
       return { rect, txt, hit };
     };
 
-    makeTinyButton(W - 310, 34, "Reset", () => {
+    makeTinyButton(W - 330, 34, "Reset", () => {
       if (this.roundEnded) return;
       this.game.events.emit("uiReset");
     });
 
-    const hintBtn = makeTinyButton(W - 230, 34, "Hint: OFF", () => {
+    const hintBtn = makeTinyButton(W - 250, 34, "Hint: OFF", () => {
       if (this.roundEnded) return;
       this.hintOn = !this.hintOn;
       hintBtn.txt.setText(this.hintOn ? "Hint: ON" : "Hint: OFF");
       this.game.events.emit("uiToggleHint", this.hintOn);
     });
 
-    const infoBtn = makeTinyButton(W - 140, 34, "Info", () => {
+    const infoBtn = makeTinyButton(W - 160, 34, "Info", () => {
       this._toggleInfoPanel();
     });
 
-    makeTinyButton(W - 60, 34, "Menu", () => {
+    makeTinyButton(W - 90, 34, "Next", () => {
+      if (this.overlay) {
+        this.overlay.destroy(true);
+        this.overlay = null;
+      }
+      this.roundEnded = false;
+
+      if (this.mode === "timed") {
+        const timeLimit = this.registry.get("timeLimitSec") || 120;
+        this.timeLeft = timeLimit;
+        this.timerText.setText("Time: " + this._formatTime(this.timeLeft));
+      }
+
+      this.game.events.emit("uiNextConstellation");
+    });
+
+    makeTinyButton(W - 30, 34, "Menu", () => {
       this.game.events.emit("uiNext"); // returns to BootScene
     });
 

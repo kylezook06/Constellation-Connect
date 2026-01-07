@@ -162,6 +162,23 @@ class GameScene extends Phaser.Scene {
     return Phaser.Utils.Array.GetRandom(list);
   }
 
+  _getPackList(season) {
+    const packs = this._getConstellationData();
+    return season === "summer" ? packs.summer : packs.winter;
+  }
+
+  _pickRandomConstellationFromList(list, avoidId) {
+    if (!list || list.length === 0) return null;
+    if (list.length === 1) return list[0];
+
+    let pick = Phaser.Utils.Array.GetRandom(list);
+    let safety = 10;
+    while (pick && pick.id === avoidId && safety-- > 0) {
+      pick = Phaser.Utils.Array.GetRandom(list);
+    }
+    return pick;
+  }
+
   _emitRoundData() {
     this.game.events.emit("roundData", {
       name: this.constellation.name,
@@ -182,60 +199,15 @@ class GameScene extends Phaser.Scene {
 
     // Pick constellation based on selected season
     const season = this.registry.get("season") || "winter";
-    this.constellation = this._pickRandomConstellation(season);
-
-    // Build edge sets
-    this.requiredEdges = new Set();
-    this.correctEdges = new Set();
-    this.wrongEdges = new Set();
-
-    for (const [a, b] of this.constellation.connections) {
-      this.requiredEdges.add(this._edgeKey(a, b));
-    }
+    const list = this._getPackList(season);
+    const first = this._pickRandomConstellationFromList(list, null);
 
     // Graphics layers
     this.hintGfx = this.add.graphics();
     this.linesGfx = this.add.graphics();
 
-    // Hint drawn faintly, toggled by UIScene
-    this._drawHintOverlay(false);
-
-    // Stars
-    this.starSprites = [];
-    this.starMap = new Map();
-
-    const starsGfx = this.add.graphics();
-
-    // Render stars as circles + subtle glow rings
-    for (const s of this.constellation.stars) {
-      // Outer faint glow
-      starsGfx.fillStyle(0xffffff, 0.08);
-      starsGfx.fillCircle(s.x, s.y, 14);
-
-      // Core
-      const dot = this.add.circle(s.x, s.y, 5, 0xffffff, 1)
-        .setStrokeStyle(2, 0x7c8cff, 0.9)
-        .setInteractive({ useHandCursor: true });
-
-      dot.starId = s.id;
-
-      dot.on("pointerover", () => {
-        if (this.roundOver) return;
-        dot.setScale(1.25);
-      });
-
-      dot.on("pointerout", () => {
-        dot.setScale(1);
-      });
-
-      dot.on("pointerdown", () => {
-        if (this.roundOver) return;
-        this._onStarClicked(dot.starId);
-      });
-
-      this.starSprites.push(dot);
-      this.starMap.set(s.id, { x: s.x, y: s.y, sprite: dot });
-    }
+    // Start first round
+    this._startNewRound(first);
 
     // Instructions overlay (light)
     this.add.text(16, H - 24, "Click stars to connect them. Complete all required connections (any order).", {
@@ -244,18 +216,12 @@ class GameScene extends Phaser.Scene {
       color: "#9aa7ff"
     });
 
-    // Emit data to UIScene
-    this._emitRoundData();
-
     // Listen for UI commands
     this.game.events.on("uiReset", this._resetRound, this);
     this.game.events.on("uiToggleHint", this._drawHintOverlay, this);
     this.game.events.on("uiNext", this._nextRound, this);
+    this.game.events.on("uiNextConstellation", this._nextConstellation, this);
 
-    // Initialize score UI
-    this.registry.set("score", 0);
-    this.registry.set("mistakes", 0);
-    this.game.events.emit("scoreChanged", { score: 0, mistakes: 0, done: 0, total: this.requiredEdges.size });
   }
 
   update() {
@@ -441,11 +407,96 @@ class GameScene extends Phaser.Scene {
     // keep hint state as-is; UIScene will re-toggle if needed
   }
 
+  _startNewRound(newConstellation) {
+    if (!newConstellation) return;
+
+    if (this.starSprites) {
+      this.starSprites.forEach((s) => s.destroy());
+    }
+    this.starSprites = [];
+    this.starMap = new Map();
+
+    if (this.linesGfx) this.linesGfx.clear();
+    if (this.hintGfx) this.hintGfx.clear();
+
+    this.roundOver = false;
+    this.selectedStarId = null;
+
+    this.constellation = newConstellation;
+
+    this.requiredEdges = new Set();
+    this.correctEdges = new Set();
+    this.wrongEdges = new Set();
+
+    for (const [a, b] of this.constellation.connections) {
+      this.requiredEdges.add(this._edgeKey(a, b));
+    }
+
+    const starsGfx = this.add.graphics();
+
+    for (const s of this.constellation.stars) {
+      starsGfx.fillStyle(0xffffff, 0.08);
+      starsGfx.fillCircle(s.x, s.y, 14);
+
+      const dot = this.add.circle(s.x, s.y, 5, 0xffffff, 1)
+        .setStrokeStyle(2, 0x7c8cff, 0.9)
+        .setInteractive({ useHandCursor: true });
+
+      dot.starId = s.id;
+
+      dot.on("pointerover", () => {
+        if (this.roundOver) return;
+        dot.setScale(1.25);
+      });
+
+      dot.on("pointerout", () => {
+        dot.setScale(1);
+      });
+
+      dot.on("pointerdown", () => {
+        if (this.roundOver) return;
+        this._onStarClicked(dot.starId);
+      });
+
+      this.starSprites.push(dot);
+      this.starMap.set(s.id, { x: s.x, y: s.y, sprite: dot });
+    }
+
+    this.registry.set("score", 0);
+    this.registry.set("mistakes", 0);
+
+    this._emitRoundData();
+    this.game.events.emit("scoreChanged", {
+      score: 0,
+      mistakes: 0,
+      done: 0,
+      total: this.requiredEdges.size
+    });
+
+    this._drawHintOverlay(false);
+  }
+
+  _nextConstellation() {
+    const season = this.registry.get("season") || "winter";
+    const list = this._getPackList(season);
+    const next = this._pickRandomConstellationFromList(
+      list,
+      this.constellation ? this.constellation.id : null
+    );
+    if (!next) return;
+
+    if (this.selectedStarId) this._setSelectedVisual(this.selectedStarId, false);
+    this.selectedStarId = null;
+
+    this._startNewRound(next);
+  }
+
   _nextRound() {
     // Go back to Boot menu for now (simple loop). You can switch to "next random in same pack" later.
     this.game.events.off("uiReset", this._resetRound, this);
     this.game.events.off("uiToggleHint", this._drawHintOverlay, this);
     this.game.events.off("uiNext", this._nextRound, this);
+    this.game.events.off("uiNextConstellation", this._nextConstellation, this);
 
     this.scene.stop("UIScene");
     this.scene.start("BootScene");
@@ -456,5 +507,6 @@ class GameScene extends Phaser.Scene {
     this.game.events.off("uiReset", this._resetRound, this);
     this.game.events.off("uiToggleHint", this._drawHintOverlay, this);
     this.game.events.off("uiNext", this._nextRound, this);
+    this.game.events.off("uiNextConstellation", this._nextConstellation, this);
   }
 }
