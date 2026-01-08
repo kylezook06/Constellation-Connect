@@ -13,5 +13,21 @@
     scene: [BootScene, GameScene, UIScene]
   };
 
-  new Phaser.Game(config);
+  const startGame = () => {
+    new Phaser.Game(config);
+  };
+
+  if (window.CONSTELLATION_PACKS) {
+    startGame();
+    return;
+  }
+
+  const script = document.createElement("script");
+  script.src = "src/data/constellations.js";
+  script.onload = startGame;
+  script.onerror = () => {
+    console.error("Failed to load constellation packs at src/data/constellations.js");
+    startGame();
+  };
+  document.head.appendChild(script);
 })();
