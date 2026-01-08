@@ -110,6 +110,145 @@
           myth: "The 'Greater Dog' often accompanies Orion in sky lore.",
           funFact: "Sirius is so bright it can appear to twinkle with intense colors near the horizon."
         }
+      },
+      {
+        id: "cassiopeia",
+        name: "Cassiopeia",
+        season: "winter",
+        stars: [
+          { id: "a", x: 260, y: 170 },
+          { id: "b", x: 320, y: 210 },
+          { id: "c", x: 380, y: 165 },
+          { id: "d", x: 440, y: 220 },
+          { id: "e", x: 510, y: 175 }
+        ],
+        connections: [
+          ["a", "b"],
+          ["b", "c"],
+          ["c", "d"],
+          ["d", "e"]
+        ],
+        info: {
+          meaning: "A bold 'W' (or 'M') shape—one of the easiest constellations to spot in the north.",
+          myth: "Cassiopeia is a queen in Greek myth, famously vain and placed among the stars.",
+          funFact: "Cassiopeia sits near Polaris; it can help you find north when the Big Dipper is low."
+        }
+      },
+      {
+        id: "perseus",
+        name: "Perseus",
+        season: "winter",
+        stars: [
+          { id: "a", x: 560, y: 130 },
+          { id: "b", x: 610, y: 190 },
+          { id: "c", x: 650, y: 160 },
+          { id: "d", x: 700, y: 230 },
+          { id: "e", x: 750, y: 195 }
+        ],
+        connections: [
+          ["a", "b"],
+          ["b", "c"],
+          ["c", "d"],
+          ["d", "e"]
+        ],
+        info: {
+          meaning: "A bright, kinked chain near Cassiopeia; it often looks like a bent 'Y' or zig-zag.",
+          myth: "Perseus is the hero who defeated Medusa and rescued Andromeda (in one famous telling).",
+          funFact: "The Perseus region hosts the famous Double Cluster (a binocular favorite)."
+        }
+      },
+      {
+        id: "auriga",
+        name: "Auriga",
+        season: "winter",
+        stars: [
+          { id: "a", x: 300, y: 170 },
+          { id: "b", x: 380, y: 140 },
+          { id: "c", x: 450, y: 200 },
+          { id: "d", x: 400, y: 285 },
+          { id: "e", x: 305, y: 255 }
+        ],
+        connections: [
+          ["a", "b"],
+          ["b", "c"],
+          ["c", "d"],
+          ["d", "e"],
+          ["e", "a"]
+        ],
+        info: {
+          meaning: "A chunky pentagon; Capella is the bright anchor star in the 'charioteer' shape.",
+          myth: "Auriga is often linked to a charioteer figure; traditions vary by source.",
+          funFact: "Capella is one of the brightest stars in the northern sky."
+        }
+      },
+      {
+        id: "canis_minor",
+        name: "Canis Minor",
+        season: "winter",
+        stars: [
+          { id: "a", x: 610, y: 250 },
+          { id: "b", x: 700, y: 300 }
+        ],
+        connections: [
+          ["a", "b"]
+        ],
+        info: {
+          meaning: "A small, simple constellation—often just a short line anchored by bright Procyon.",
+          myth: "The 'Lesser Dog' is often paired in sky lore with Canis Major.",
+          funFact: "Procyon forms the Winter Triangle with Sirius and Betelgeuse in many sky guides."
+        }
+      },
+      {
+        id: "lepus",
+        name: "Lepus",
+        season: "winter",
+        stars: [
+          { id: "a", x: 330, y: 320 },
+          { id: "b", x: 420, y: 330 },
+          { id: "c", x: 450, y: 410 },
+          { id: "d", x: 360, y: 430 },
+          { id: "e", x: 300, y: 385 }
+        ],
+        connections: [
+          ["a", "b"],
+          ["b", "c"],
+          ["c", "d"],
+          ["d", "e"],
+          ["e", "a"]
+        ],
+        info: {
+          meaning: "A compact quadrilateral-ish outline below Orion—often shown as a little 'boxy' rabbit.",
+          myth: "Lepus is the hare; in some lore it’s chased by Orion.",
+          funFact: "It sits just south of Orion, making it a good 'next step' constellation for learners."
+        }
+      },
+      {
+        id: "ursa_major_dipper",
+        name: "Ursa Major (Big Dipper)",
+        season: "winter",
+        stars: [
+          { id: "a", x: 520, y: 140 },
+          { id: "b", x: 600, y: 160 },
+          { id: "c", x: 620, y: 240 },
+          { id: "d", x: 540, y: 255 },
+          { id: "e", x: 455, y: 230 },
+          { id: "f", x: 395, y: 190 },
+          { id: "g", x: 345, y: 150 }
+        ],
+        connections: [
+          ["a", "b"],
+          ["b", "c"],
+          ["c", "d"],
+          ["d", "a"],
+          ["d", "e"],
+          ["e", "f"],
+          ["f", "g"]
+        ],
+        info: {
+          meaning: "The Big Dipper asterism is a ladle shape; the two 'pointer stars' help locate Polaris.",
+          myth: "Ursa Major is the Great Bear in Greek tradition, but bear stories appear in many cultures.",
+          funFact: "The bowl’s edge stars are used as pointers to Polaris (the North Star)."
+        }
       }
     ],
     summer: [
@@ -202,6 +341,155 @@
           meaning: "A long, curved 'hook' shape; often drawn as a scorpion tail.",
           myth: "In Greek myth, Scorpius is sent against Orion; the two are often placed in opposite parts of the sky.",
           funFact: "Antares (near the middle) is a red supergiant often called the scorpion’s 'heart'."
+        }
+      },
+      {
+        id: "sagittarius_teapot",
+        name: "Sagittarius (Teapot)",
+        season: "summer",
+        stars: [
+          { id: "a", x: 610, y: 340 },
+          { id: "b", x: 560, y: 380 },
+          { id: "c", x: 660, y: 395 },
+          { id: "d", x: 620, y: 455 },
+          { id: "e", x: 710, y: 420 },
+          { id: "f", x: 500, y: 420 }
+        ],
+        connections: [
+          ["a", "b"],
+          ["a", "c"],
+          ["b", "d"],
+          ["c", "d"],
+          ["c", "e"],
+          ["b", "f"]
+        ],
+        info: {
+          meaning: "A famous 'teapot' outline—great for learning the Milky Way direction in summer.",
+          myth: "Sagittarius is often depicted as an archer; the teapot is a modern recognition aid.",
+          funFact: "The spout points toward the dense Milky Way near the Galactic Center."
+        }
+      },
+      {
+        id: "hercules_keystone",
+        name: "Hercules (Keystone)",
+        season: "summer",
+        stars: [
+          { id: "a", x: 300, y: 170 },
+          { id: "b", x: 390, y: 180 },
+          { id: "c", x: 415, y: 270 },
+          { id: "d", x: 325, y: 285 },
+          { id: "e", x: 250, y: 235 }
+        ],
+        connections: [
+          ["a", "b"],
+          ["b", "c"],
+          ["c", "d"],
+          ["d", "a"],
+          ["a", "e"],
+          ["d", "e"]
+        ],
+        info: {
+          meaning: "The Keystone is a lopsided quadrilateral—the easiest anchor for finding Hercules.",
+          myth: "Linked to Heracles/Hercules and his labors; exact sky mapping varies by tradition.",
+          funFact: "M13 (the Great Hercules Cluster) sits near the Keystone—an iconic telescope target."
+        }
+      },
+      {
+        id: "corona_borealis",
+        name: "Corona Borealis",
+        season: "summer",
+        stars: [
+          { id: "a", x: 520, y: 210 },
+          { id: "b", x: 560, y: 185 },
+          { id: "c", x: 605, y: 175 },
+          { id: "d", x: 650, y: 190 },
+          { id: "e", x: 685, y: 220 }
+        ],
+        connections: [
+          ["a", "b"],
+          ["b", "c"],
+          ["c", "d"],
+          ["d", "e"]
+        ],
+        info: {
+          meaning: "A delicate arc like a small crown; easy to recognize once you spot the curve.",
+          myth: "Often called the 'Northern Crown' in Western tradition.",
+          funFact: "The star Gemma (Alphecca) is the brightest in the arc and marks the crown’s jewel."
+        }
+      },
+      {
+        id: "delphinus",
+        name: "Delphinus",
+        season: "summer",
+        stars: [
+          { id: "a", x: 680, y: 220 },
+          { id: "b", x: 720, y: 250 },
+          { id: "c", x: 690, y: 285 },
+          { id: "d", x: 650, y: 250 },
+          { id: "e", x: 615, y: 305 }
+        ],
+        connections: [
+          ["a", "b"],
+          ["b", "c"],
+          ["c", "d"],
+          ["d", "a"],
+          ["c", "e"]
+        ],
+        info: {
+          meaning: "A small diamond with a tail—often described as a little 'kite' shape.",
+          myth: "Delphinus is tied to dolphin myths and maritime stories in several traditions.",
+          funFact: "It’s compact and faint, but the diamond shape makes it a fun pattern-hunt."
+        }
+      },
+      {
+        id: "ophiuchus",
+        name: "Ophiuchus",
+        season: "summer",
+        stars: [
+          { id: "a", x: 420, y: 160 },
+          { id: "b", x: 470, y: 210 },
+          { id: "c", x: 520, y: 255 },
+          { id: "d", x: 475, y: 320 },
+          { id: "e", x: 410, y: 290 },
+          { id: "f", x: 560, y: 310 }
+        ],
+        connections: [
+          ["a", "b"],
+          ["b", "c"],
+          ["c", "d"],
+          ["d", "e"],
+          ["e", "b"],
+          ["c", "f"]
+        ],
+        info: {
+          meaning: "A broad, human-like outline; many guides show it as a large arc with a central spine.",
+          myth: "Often identified with Asclepius, a healer figure, associated with the serpent (nearby Serpens).",
+          funFact: "Ophiuchus lies along the ecliptic; it’s sometimes called a '13th zodiac' constellation region."
+        }
+      },
+      {
+        id: "draco",
+        name: "Draco",
+        season: "summer",
+        stars: [
+          { id: "a", x: 260, y: 130 },
+          { id: "b", x: 330, y: 160 },
+          { id: "c", x: 390, y: 210 },
+          { id: "d", x: 360, y: 275 },
+          { id: "e", x: 300, y: 330 },
+          { id: "f", x: 230, y: 370 }
+        ],
+        connections: [
+          ["a", "b"],
+          ["b", "c"],
+          ["c", "d"],
+          ["d", "e"],
+          ["e", "f"]
+        ],
+        info: {
+          meaning: "A long, winding dragon-like chain near the north; often drawn as a sinuous curve.",
+          myth: "Draco is a dragon in Greek tradition; 'dragon' sky figures appear widely across cultures.",
+          funFact: "Thuban in Draco was the North Star around 2700 BCE due to Earth’s precession."
         }
       }
     ]
