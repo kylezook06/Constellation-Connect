@@ -137,6 +137,78 @@ class GameScene extends Phaser.Scene {
   }
 
   // ---------- Gameplay ----------
+  _deg2rad(deg) {
+    return (deg * Math.PI) / 180;
+  }
+
+  _wrapRadDelta(rad) {
+    let value = rad;
+    while (value > Math.PI) value -= Math.PI * 2;
+    while (value < -Math.PI) value += Math.PI * 2;
+    return value;
+  }
+
+  _projectRADec(raDeg, decDeg, ra0Deg, dec0Deg) {
+    const ra = this._deg2rad(raDeg);
+    const dec = this._deg2rad(decDeg);
+    const ra0 = this._deg2rad(ra0Deg);
+    const dec0 = this._deg2rad(dec0Deg);
+
+    const dRa = this._wrapRadDelta(ra - ra0);
+    const x = Math.cos(dec) * Math.sin(dRa);
+    const y = Math.sin(dec) * Math.cos(dec0) - Math.cos(dec) * Math.sin(dec0) * Math.cos(dRa);
+
+    return { x, y };
+  }
+
+  _layoutFromRADec(stars, box) {
+    let ra0 = 0;
+    let dec0 = 0;
+    for (const s of stars) {
+      ra0 += s.ra;
+      dec0 += s.dec;
+    }
+    ra0 /= stars.length;
+    dec0 /= stars.length;
+
+    const pts = stars.map((s) => {
+      const p = this._projectRADec(s.ra, s.dec, ra0, dec0);
+      return { id: s.id, x: p.x, y: p.y };
+    });
+
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+    for (const p of pts) {
+      if (p.x < minX) minX = p.x;
+      if (p.x > maxX) maxX = p.x;
+      if (p.y < minY) minY = p.y;
+      if (p.y > maxY) maxY = p.y;
+    }
+
+    const w = Math.max(1e-9, maxX - minX);
+    const h = Math.max(1e-9, maxY - minY);
+
+    const pad = 30;
+    const targetW = box.w - pad * 2;
+    const targetH = box.h - pad * 2;
+    const scale = Math.min(targetW / w, targetH / h);
+    const flipX = true;
+
+    const out = new Map();
+    for (const p of pts) {
+      let nx = (p.x - minX) * scale;
+      let ny = (p.y - minY) * scale;
+      if (flipX) nx = targetW - nx;
+      const sx = box.x + pad + nx;
+      const sy = box.y + pad + ny;
+      out.set(p.id, { x: sx, y: sy });
+    }
+
+    return out;
+  }
+
   _segmentsIntersect(a, b, c, d) {
     const orient = (p, q, r) => {
       const v = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
@@ -313,6 +385,11 @@ class GameScene extends Phaser.Scene {
 
     if (!visible) return;
 
+    const hasRaDec = this.constellation.stars.every((s) => typeof s.ra === "number" && typeof s.dec === "number");
+    const fallbackLayout = hasRaDec
+      ? this._layoutFromRADec(this.constellation.stars, { x: 0, y: 60, w: this.scale.width, h: this.scale.height - 60 })
+      : null;
+
     // Faint blueprint of required connections
     this.hintGfx.lineStyle(2, 0xffffff, 0.18);
     for (const [aId, bId] of this.constellation.connections) {
@@ -326,6 +403,14 @@ class GameScene extends Phaser.Scene {
         ay = a.y;
         bx = b.x;
         by = b.y;
+      } else if (fallbackLayout) {
+        const fa = fallbackLayout.get(aId);
+        const fb = fallbackLayout.get(bId);
+        if (!fa || !fb) continue;
+        ax = fa.x;
+        ay = fa.y;
+        bx = fb.x;
+        by = fb.y;
       } else {
         const sa = this.constellation.stars.find((s) => s.id === aId);
         const sb = this.constellation.stars.find((s) => s.id === bId);
@@ -434,6 +519,11 @@ class GameScene extends Phaser.Scene {
       this.requiredEdges.add(this._edgeKey(a, b));
     }
 
+    const hasRaDec = this.constellation.stars.every((s) => typeof s.ra === "number" && typeof s.dec === "number");
+    const layoutMap = hasRaDec
+      ? this._layoutFromRADec(this.constellation.stars, { x: 0, y: 60, w: this.scale.width, h: this.scale.height - 60 })
+      : new Map(this.constellation.stars.map((s) => [s.id, { x: s.x, y: s.y }]));
+
     if (this.starsGfx) {
       this.starsGfx.destroy();
     }
@@ -441,10 +531,12 @@ class GameScene extends Phaser.Scene {
     const starsGfx = this.starsGfx;
 
     for (const s of this.constellation.stars) {
+      const pos = layoutMap.get(s.id);
+      if (!pos) continue;
       starsGfx.fillStyle(0xffffff, 0.08);
-      starsGfx.fillCircle(s.x, s.y, 14);
+      starsGfx.fillCircle(pos.x, pos.y, 14);
 
-      const dot = this.add.circle(s.x, s.y, 5, 0xffffff, 1)
+      const dot = this.add.circle(pos.x, pos.y, 5, 0xffffff, 1)
         .setStrokeStyle(2, 0x7c8cff, 0.9)
         .setInteractive({ useHandCursor: true });
 
@@ -465,7 +557,7 @@ class GameScene extends Phaser.Scene {
       });
 
       this.starSprites.push(dot);
-      this.starMap.set(s.id, { x: s.x, y: s.y, sprite: dot });
+      this.starMap.set(s.id, { x: pos.x, y: pos.y, sprite: dot });
     }
 
     this.registry.set("score", 0);
