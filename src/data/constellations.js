@@ -155,80 +155,80 @@
       season: "winter",
       stars: [
         {
-          id: "a",
-          ra: 97.5,
-          dec: 43.33
+          id: "castor",
+          ra: 113.75,
+          dec: 31.85
         },
         {
-          id: "b",
-          ra: 131.25,
-          dec: 38.33
+          id: "pollux",
+          ra: 116.5,
+          dec: 27.97
         },
         {
-          id: "c",
-          ra: 93.75,
-          dec: 13.33
+          id: "wasat",
+          ra: 110.25,
+          dec: 21.95
         },
         {
-          id: "d",
-          ra: 127.5,
-          dec: 8.33
+          id: "mebsuta",
+          ra: 101.25,
+          dec: 25.1
         },
         {
-          id: "e",
-          ra: 90,
-          dec: -20
+          id: "mekbuda",
+          ra: 106.25,
+          dec: 20.53
         },
         {
-          id: "f",
-          ra: 123.75,
-          dec: -25
+          id: "alhena",
+          ra: 99.5,
+          dec: 16.38
         },
         {
-          id: "g",
-          ra: 84.38,
-          dec: -53.33
+          id: "tejat",
+          ra: 96,
+          dec: 22.5
         },
         {
-          id: "h",
-          ra: 118.13,
-          dec: -58.33
+          id: "propus",
+          ra: 94,
+          dec: 22.5
         }
       ],
       connections: [
         [
-          "a",
-          "c"
+          "castor",
+          "wasat"
         ],
         [
-          "c",
-          "e"
+          "pollux",
+          "wasat"
         ],
         [
-          "e",
-          "g"
+          "wasat",
+          "mebsuta"
         ],
         [
-          "b",
-          "d"
+          "wasat",
+          "mekbuda"
         ],
         [
-          "d",
-          "f"
+          "mekbuda",
+          "alhena"
         ],
         [
-          "f",
-          "h"
+          "mebsuta",
+          "tejat"
         ],
         [
-          "c",
-          "d"
+          "tejat",
+          "propus"
         ]
       ],
       info: {
-        meaning: "Two 'twin' columns; look for bright Castor and Pollux close together.",
-        myth: "The twins Castor and Pollux (Dioscuri) appear in many Greek and Roman stories.",
-        funFact: "Pollux is actually the brighter star, even though Castor gets top billing in the name pairing."
+        meaning: "The Twins — Castor and Pollux.",
+        myth: "In Greek myth, the twins were brothers, one mortal and one divine.",
+        funFact: "Gemini is associated with duality and is prominent in winter skies."
       }
     },
     {
