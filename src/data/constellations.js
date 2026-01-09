@@ -157,42 +157,116 @@
         {
           id: "castor",
           ra: 113.75,
-          dec: 31.85
+          dec: 31.85,
+          role: "outline"
         },
         {
           id: "pollux",
           ra: 116.5,
-          dec: 27.97
+          dec: 27.97,
+          role: "outline"
         },
         {
           id: "wasat",
           ra: 110.25,
-          dec: 21.95
+          dec: 21.95,
+          role: "outline"
         },
         {
           id: "mebsuta",
           ra: 101.25,
-          dec: 25.1
+          dec: 25.1,
+          role: "outline"
         },
         {
           id: "mekbuda",
           ra: 106.25,
-          dec: 20.53
+          dec: 20.53,
+          role: "outline"
         },
         {
           id: "alhena",
           ra: 99.5,
-          dec: 16.38
+          dec: 16.38,
+          role: "outline"
         },
         {
           id: "tejat",
           ra: 96,
-          dec: 22.5
+          dec: 22.5,
+          role: "outline"
         },
         {
           id: "propus",
           ra: 94,
-          dec: 22.5
+          dec: 22.5,
+          role: "outline"
+        },
+        {
+          id: "theta",
+          ra: 103.1958,
+          dec: 33.9611,
+          role: "context"
+        },
+        {
+          id: "iota",
+          ra: 111.4292,
+          dec: 27.7981,
+          role: "context"
+        },
+        {
+          id: "kappa",
+          ra: 116.1083,
+          dec: 24.3981,
+          role: "context"
+        },
+        {
+          id: "lambda",
+          ra: 109.5208,
+          dec: 16.5403,
+          role: "context"
+        },
+        {
+          id: "nu",
+          ra: 97.2375,
+          dec: 20.2119,
+          role: "context"
+        },
+        {
+          id: "xi",
+          ra: 101.3208,
+          dec: 12.8956,
+          role: "context"
+        },
+        {
+          id: "pi",
+          ra: 116.875,
+          dec: 33.4156,
+          role: "context"
+        },
+        {
+          id: "rho",
+          ra: 112.275,
+          dec: 31.7844,
+          role: "context"
+        },
+        {
+          id: "tau",
+          ra: 107.7833,
+          dec: 30.2453,
+          role: "context"
+        },
+        {
+          id: "upsilon",
+          ra: 113.9792,
+          dec: 26.8986,
+          role: "context"
+        },
+        {
+          id: "phi",
+          ra: 118.3708,
+          dec: 26.7656,
+          role: "context"
         }
       ],
       connections: [

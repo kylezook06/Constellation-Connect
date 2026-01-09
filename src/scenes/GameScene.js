@@ -530,31 +530,44 @@ class GameScene extends Phaser.Scene {
     this.starsGfx = this.add.graphics();
     const starsGfx = this.starsGfx;
 
+    const hardMode = !!this.registry.get("hardMode");
     for (const s of this.constellation.stars) {
       const pos = layoutMap.get(s.id);
       if (!pos) continue;
-      starsGfx.fillStyle(0xffffff, 0.08);
+      const role = s.role || "outline";
+      const isOutline = role === "outline";
+      const contextAlpha = hardMode ? 0.35 : 0.18;
+      const glowAlpha = isOutline ? 0.08 : (hardMode ? 0.05 : 0.03);
+
+      starsGfx.fillStyle(0xffffff, glowAlpha);
       starsGfx.fillCircle(pos.x, pos.y, 14);
 
       const dot = this.add.circle(pos.x, pos.y, 5, 0xffffff, 1)
-        .setStrokeStyle(2, 0x7c8cff, 0.9)
-        .setInteractive({ useHandCursor: true });
+        .setStrokeStyle(2, 0x7c8cff, 0.9);
+      dot.setAlpha(isOutline ? 1 : contextAlpha);
 
       dot.starId = s.id;
 
-      dot.on("pointerover", () => {
-        if (this.roundOver) return;
-        dot.setScale(1.25);
-      });
+      const interactive = isOutline || hardMode;
+      if (interactive) {
+        dot.setInteractive({ useHandCursor: true });
 
-      dot.on("pointerout", () => {
-        dot.setScale(1);
-      });
+        dot.on("pointerover", () => {
+          if (this.roundOver) return;
+          dot.setScale(1.25);
+        });
 
-      dot.on("pointerdown", () => {
-        if (this.roundOver) return;
-        this._onStarClicked(dot.starId);
-      });
+        dot.on("pointerout", () => {
+          dot.setScale(1);
+        });
+
+        dot.on("pointerdown", () => {
+          if (this.roundOver) return;
+          this._onStarClicked(dot.starId);
+        });
+      } else {
+        dot.disableInteractive();
+      }
 
       this.starSprites.push(dot);
       this.starMap.set(s.id, { x: pos.x, y: pos.y, sprite: dot });
