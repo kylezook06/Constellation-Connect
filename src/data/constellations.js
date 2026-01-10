@@ -2,6 +2,9 @@
 // GameScene will read from window.CONSTELLATION_PACKS.
 
 (function () {
+  const ra = (h, m, s = 0) => (h + m / 60 + s / 3600) * 15;
+  const dec = (sign, d, m = 0, s = 0) => sign * (d + m / 60 + s / 3600);
+
   const PACKS = {
   winter: [
     {
@@ -154,150 +157,32 @@
       name: "Gemini",
       season: "winter",
       stars: [
-        {
-          id: "castor",
-          ra: 113.75,
-          dec: 31.85,
-          role: "outline"
-        },
-        {
-          id: "pollux",
-          ra: 116.5,
-          dec: 27.97,
-          role: "outline"
-        },
-        {
-          id: "wasat",
-          ra: 110.25,
-          dec: 21.95,
-          role: "outline"
-        },
-        {
-          id: "mebsuta",
-          ra: 101.25,
-          dec: 25.1,
-          role: "outline"
-        },
-        {
-          id: "mekbuda",
-          ra: 106.25,
-          dec: 20.53,
-          role: "outline"
-        },
-        {
-          id: "alhena",
-          ra: 99.5,
-          dec: 16.38,
-          role: "outline"
-        },
-        {
-          id: "tejat",
-          ra: 96,
-          dec: 22.5,
-          role: "outline"
-        },
-        {
-          id: "propus",
-          ra: 94,
-          dec: 22.5,
-          role: "outline"
-        },
-        {
-          id: "theta",
-          ra: 103.1958,
-          dec: 33.9611,
-          role: "context"
-        },
-        {
-          id: "iota",
-          ra: 111.4292,
-          dec: 27.7981,
-          role: "context"
-        },
-        {
-          id: "kappa",
-          ra: 116.1083,
-          dec: 24.3981,
-          role: "context"
-        },
-        {
-          id: "lambda",
-          ra: 109.5208,
-          dec: 16.5403,
-          role: "context"
-        },
-        {
-          id: "nu",
-          ra: 97.2375,
-          dec: 20.2119,
-          role: "context"
-        },
-        {
-          id: "xi",
-          ra: 101.3208,
-          dec: 12.8956,
-          role: "context"
-        },
-        {
-          id: "pi",
-          ra: 116.875,
-          dec: 33.4156,
-          role: "context"
-        },
-        {
-          id: "rho",
-          ra: 112.275,
-          dec: 31.7844,
-          role: "context"
-        },
-        {
-          id: "tau",
-          ra: 107.7833,
-          dec: 30.2453,
-          role: "context"
-        },
-        {
-          id: "upsilon",
-          ra: 113.9792,
-          dec: 26.8986,
-          role: "context"
-        },
-        {
-          id: "phi",
-          ra: 118.3708,
-          dec: 26.7656,
-          role: "context"
-        }
+        { id: "alpha", name: "Castor", ra: ra(7, 34, 36), dec: dec(1, 31, 53, 18), mag: 1.58, role: "outline" },
+        { id: "beta", name: "Pollux", ra: ra(7, 45, 19), dec: dec(1, 28, 1, 34), mag: 1.14, role: "outline" },
+        { id: "gamma", name: "Alhena", ra: ra(6, 37, 42), dec: dec(1, 16, 23, 57), mag: 1.93, role: "outline" },
+        { id: "delta", name: "Wasat", ra: ra(7, 20, 7), dec: dec(1, 21, 58, 56), mag: 3.53, role: "outline" },
+        { id: "eps", name: "Mebsuta", ra: ra(6, 43, 55), dec: dec(1, 25, 7, 52), mag: 3.06, role: "outline" },
+        { id: "zeta", name: "Mekbuda", ra: ra(7, 4, 6), dec: dec(1, 20, 34, 13), mag: 3.79, role: "outline" },
+        { id: "eta", name: "Propus", ra: ra(6, 14, 52), dec: dec(1, 22, 30, 24), mag: 3.31, role: "outline" },
+        { id: "mu", name: "Tejat", ra: ra(6, 22, 57), dec: dec(1, 22, 30, 49), mag: 2.87, role: "outline" },
+        { id: "theta", name: "Theta", ra: ra(6, 52, 47), dec: dec(1, 33, 57, 40), mag: 3.6, role: "context" },
+        { id: "iota", name: "Iota", ra: ra(7, 25, 43), dec: dec(1, 27, 47, 53), mag: 3.78, role: "context" },
+        { id: "kappa", name: "Kappa", ra: ra(7, 44, 26), dec: dec(1, 24, 23, 53), mag: 3.57, role: "context" },
+        { id: "lambda", name: "Lambda", ra: ra(7, 18, 5), dec: dec(1, 16, 32, 25), mag: 3.58, role: "context" },
+        { id: "nu", name: "Nu", ra: ra(6, 28, 57), dec: dec(1, 20, 12, 43), mag: 4.15, role: "context" },
+        { id: "xi", name: "Xi", ra: ra(6, 45, 17), dec: dec(1, 12, 53, 44), mag: 3.35, role: "context" },
+        { id: "rho", name: "Rho", ra: ra(7, 29, 6), dec: dec(1, 31, 47, 4), mag: 4.16, role: "context" },
+        { id: "tau", name: "Tau", ra: ra(7, 11, 8), dec: dec(1, 30, 14, 43), mag: 4.42, role: "context" },
+        { id: "ups", name: "Upsilon", ra: ra(7, 35, 55), dec: dec(1, 26, 53, 44), mag: 4.06, role: "context" }
       ],
       connections: [
-        [
-          "castor",
-          "wasat"
-        ],
-        [
-          "pollux",
-          "wasat"
-        ],
-        [
-          "wasat",
-          "mebsuta"
-        ],
-        [
-          "wasat",
-          "mekbuda"
-        ],
-        [
-          "mekbuda",
-          "alhena"
-        ],
-        [
-          "mebsuta",
-          "tejat"
-        ],
-        [
-          "tejat",
-          "propus"
-        ]
+        ["alpha", "delta"],
+        ["beta", "delta"],
+        ["delta", "eps"],
+        ["delta", "zeta"],
+        ["zeta", "gamma"],
+        ["eps", "mu"],
+        ["mu", "eta"]
       ],
       info: {
         meaning: "The Twins — Castor and Pollux.",
