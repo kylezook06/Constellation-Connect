@@ -175,7 +175,7 @@
         { id: "tau", name: "Tau", ra: ra(7, 11, 8), dec: dec(1, 30, 14, 43), mag: 4.42, role: "context" },
         { id: "ups", name: "Upsilon", ra: ra(7, 35, 55), dec: dec(1, 26, 53, 44), mag: 4.06, role: "context" }
       ],
-      connections: [
+      connectionsStandard: [
         ["alpha", "delta"],
         ["beta", "delta"],
         ["delta", "eps"],
@@ -183,6 +183,23 @@
         ["zeta", "gamma"],
         ["eps", "mu"],
         ["mu", "eta"]
+      ],
+      connectionsHard: [
+        ["alpha", "rho"],
+        ["rho", "tau"],
+        ["tau", "theta"],
+        ["beta", "iota"],
+        ["iota", "kappa"],
+        ["delta", "eps"],
+        ["delta", "zeta"],
+        ["delta", "nu"],
+        ["zeta", "gamma"],
+        ["gamma", "xi"],
+        ["xi", "lambda"],
+        ["eps", "mu"],
+        ["mu", "ups"],
+        ["eps", "iota"],
+        ["nu", "beta"]
       ],
       info: {
         meaning: "The Twins — Castor and Pollux.",

@@ -202,7 +202,7 @@ class GameScene extends Phaser.Scene {
       let ny = (p.y - minY) * scale;
       if (flipX) nx = targetW - nx;
       const sx = box.x + pad + nx;
-      const sy = box.y + pad + ny;
+      const sy = box.y + pad + (targetH - ny);
       out.set(p.id, { x: sx, y: sy });
     }
 
@@ -236,6 +236,13 @@ class GameScene extends Phaser.Scene {
     if (o4 === 0 && onSeg(c, b, d)) return true;
 
     return false;
+  }
+
+  _getConnectionsForMode() {
+    const hardMode = !!this.registry.get("hardMode");
+    if (hardMode && Array.isArray(this.constellation.connectionsHard)) return this.constellation.connectionsHard;
+    if (!hardMode && Array.isArray(this.constellation.connectionsStandard)) return this.constellation.connectionsStandard;
+    return this.constellation.connections || [];
   }
 
   _wouldCrossExisting(aId, bId) {
@@ -392,7 +399,7 @@ class GameScene extends Phaser.Scene {
 
     // Faint blueprint of required connections
     this.hintGfx.lineStyle(2, 0xffffff, 0.18);
-    for (const [aId, bId] of this.constellation.connections) {
+    for (const [aId, bId] of this._getConnectionsForMode()) {
       const a = this.starMap ? this.starMap.get(aId) : null;
       const b = this.starMap ? this.starMap.get(bId) : null;
 
@@ -515,7 +522,7 @@ class GameScene extends Phaser.Scene {
     this.correctEdges = new Set();
     this.wrongEdges = new Set();
 
-    for (const [a, b] of this.constellation.connections) {
+    for (const [a, b] of this._getConnectionsForMode()) {
       this.requiredEdges.add(this._edgeKey(a, b));
     }
 
