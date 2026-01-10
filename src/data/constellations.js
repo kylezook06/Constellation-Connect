@@ -4,6 +4,97 @@
 (function () {
   const ra = (h, m, s = 0) => (h + m / 60 + s / 3600) * 15;
   const dec = (sign, d, m = 0, s = 0) => sign * (d + m / 60 + s / 3600);
+  const buildHipStars = (hips, outlineHips) => {
+    const unique = Array.from(new Set(hips));
+    const count = unique.length || 1;
+    const step = (Math.PI * 2) / count;
+    return unique.map((hip, index) => ({
+      id: hip,
+      hip,
+      name: `HIP ${hip}`,
+      ra: (index / count) * 360,
+      dec: Math.sin(step * index) * 30,
+      role: outlineHips.has(hip) ? "outline" : "context"
+    }));
+  };
+  const ORION_STANDARD = [
+    [27989, 26727],
+    [25336, 25930],
+    [26727, 26311],
+    [26311, 25930],
+    [26727, 27366],
+    [25930, 24436],
+    [27989, 25336]
+  ];
+  const ORION_HARD = [
+    ...ORION_STANDARD,
+    [26207, 27989],
+    [26207, 25336],
+    [22449, 22509],
+    [22449, 22730],
+    [22449, 25336],
+    [27989, 28716],
+    [28716, 29426]
+  ];
+  const ORION_OUTLINE = new Set(ORION_STANDARD.flat());
+  const ORION_HIPS = ORION_HARD.flat();
+
+  const TAURUS_STANDARD = [
+    [21421, 20889],
+    [20889, 20455],
+    [20455, 20205],
+    [20205, 21421],
+    [20889, 25428],
+    [21421, 26451]
+  ];
+  const TAURUS_HARD = [
+    ...TAURUS_STANDARD,
+    [21421, 18724],
+    [18724, 16083],
+    [16083, 15900],
+    [18724, 16852],
+    [20455, 17702]
+  ];
+  const TAURUS_OUTLINE = new Set(TAURUS_STANDARD.flat());
+  const TAURUS_HIPS = TAURUS_HARD.flat();
+
+  const GEMINI_STANDARD = [
+    [36850, 34693],
+    [34693, 32246],
+    [32246, 30883],
+    [30883, 31681],
+    [28734, 29655],
+    [29655, 30883],
+    [34693, 35550],
+    [35550, 34088],
+    [34088, 31681]
+  ];
+  const GEMINI_HARD = [
+    ...GEMINI_STANDARD,
+    [35550, 36962],
+    [36962, 37740],
+    [37740, 37826],
+    [34088, 36046],
+    [32362, 29655]
+  ];
+  const GEMINI_OUTLINE = new Set(GEMINI_STANDARD.flat());
+  const GEMINI_HIPS = GEMINI_HARD.flat();
+
+  const CANIS_MAJOR_STANDARD = [
+    [32349, 30324],
+    [32349, 34444],
+    [34444, 33579],
+    [34444, 35904]
+  ];
+  const CANIS_MAJOR_HARD = [
+    ...CANIS_MAJOR_STANDARD,
+    [32349, 33977],
+    [33977, 34444],
+    [33579, 33856],
+    [33579, 30122]
+  ];
+  const CANIS_MAJOR_OUTLINE = new Set(CANIS_MAJOR_STANDARD.flat());
+  const CANIS_MAJOR_HIPS = CANIS_MAJOR_HARD.flat();
 
   const PACKS = {
   winter: [
@@ -11,62 +102,9 @@
       id: "orion",
       name: "Orion",
       season: "winter",
-      stars: [
-        { id: "alpha", name: "Betelgeuse", ra: ra(5, 55, 10), dec: dec(1, 7, 24, 25), mag: 0.42, role: "outline" },
-        { id: "beta", name: "Rigel", ra: ra(5, 14, 32), dec: dec(-1, 8, 12, 6), mag: 0.13, role: "outline" },
-        { id: "gamma", name: "Bellatrix", ra: ra(5, 25, 7), dec: dec(1, 6, 20, 59), mag: 1.64, role: "outline" },
-        { id: "delta", name: "Mintaka", ra: ra(5, 32, 0), dec: dec(-1, 0, 17, 56), mag: 2.25, role: "outline" },
-        { id: "epsilon", name: "Alnilam", ra: ra(5, 36, 12), dec: dec(-1, 1, 12, 7), mag: 1.69, role: "outline" },
-        { id: "zeta", name: "Alnitak", ra: ra(5, 40, 45), dec: dec(-1, 1, 56, 34), mag: 1.74, role: "outline" },
-        { id: "eta", name: "Saiph", ra: ra(5, 47, 45), dec: dec(-1, 9, 40, 11), mag: 2.07, role: "outline" },
-        { id: "kappa", name: "Kappa", ra: ra(5, 47, 45), dec: dec(-1, 9, 40, 11), mag: 2.07, role: "context" },
-        { id: "iota", name: "Hatysa", ra: ra(5, 35, 26), dec: dec(-1, 5, 54, 35), mag: 2.75, role: "context" },
-        { id: "pi1", name: "Pi1", ra: ra(4, 49, 50), dec: dec(1, 6, 57, 40), mag: 4.65, role: "context" },
-        { id: "pi2", name: "Pi2", ra: ra(4, 50, 50), dec: dec(1, 6, 57, 40), mag: 4.64, role: "context" },
-        { id: "pi3", name: "Pi3", ra: ra(4, 58, 32), dec: dec(1, 6, 57, 40), mag: 3.19, role: "context" },
-        { id: "pi4", name: "Pi4", ra: ra(5, 6, 52), dec: dec(1, 6, 57, 40), mag: 3.68, role: "context" },
-        { id: "pi5", name: "Pi5", ra: ra(5, 12, 26), dec: dec(1, 6, 57, 40), mag: 3.71, role: "context" },
-        { id: "pi6", name: "Pi6", ra: ra(5, 17, 56), dec: dec(1, 6, 57, 40), mag: 4.47, role: "context" },
-        { id: "lambda", name: "Meissa", ra: ra(5, 35, 8), dec: dec(1, 9, 56, 3), mag: 3.39, role: "context" },
-        { id: "mu", name: "Mu", ra: ra(5, 32, 8), dec: dec(1, 9, 56, 3), mag: 4.12, role: "context" },
-        { id: "nu", name: "Nu", ra: ra(5, 55, 11), dec: dec(1, 7, 24, 25), mag: 4.42, role: "context" }
-      ],
-      connectionsStandard: [
-        ["alpha", "gamma"],
-        ["gamma", "delta"],
-        ["delta", "epsilon"],
-        ["epsilon", "zeta"],
-        ["zeta", "beta"],
-        ["beta", "eta"],
-        ["eta", "alpha"],
-        ["delta", "beta"],
-        ["gamma", "epsilon"]
-      ],
-      connectionsHard: [
-        ["alpha", "gamma"],
-        ["gamma", "delta"],
-        ["delta", "epsilon"],
-        ["epsilon", "zeta"],
-        ["zeta", "beta"],
-        ["beta", "eta"],
-        ["eta", "alpha"],
-        ["delta", "beta"],
-        ["gamma", "epsilon"],
-        ["lambda", "delta"],
-        ["lambda", "gamma"],
-        ["lambda", "pi3"],
-        ["pi3", "pi4"],
-        ["pi4", "pi5"],
-        ["pi5", "pi6"],
-        ["pi6", "beta"],
-        ["pi3", "pi2"],
-        ["pi2", "pi1"],
-        ["pi1", "alpha"],
-        ["alpha", "mu"],
-        ["mu", "delta"],
-        ["mu", "epsilon"],
-        ["nu", "alpha"]
-      ],
+      stars: buildHipStars(ORION_HIPS, ORION_OUTLINE),
+      connectionsStandard: ORION_STANDARD,
+      connectionsHard: ORION_HARD,
       info: {
         meaning: "A distinctive hunter figure; the three-star belt is the easiest anchor.",
         myth: "In Greek myth, Orion was a great hunter placed among the stars; many cultures have their own Orion-like figure.",
@@ -77,67 +115,9 @@
       id: "taurus",
       name: "Taurus",
       season: "winter",
-      stars: [
-        { id: "alpha", name: "Aldebaran", ra: ra(4, 35, 55), dec: dec(1, 16, 30, 33), mag: 0.85, role: "outline" },
-        { id: "beta", name: "Elnath", ra: ra(5, 26, 17), dec: dec(1, 28, 36, 27), mag: 1.65, role: "outline" },
-        { id: "gamma", name: "Hyadum I", ra: ra(4, 19, 47), dec: dec(1, 15, 37, 39), mag: 3.65, role: "outline" },
-        { id: "delta", name: "Hyadum II", ra: ra(4, 22, 56), dec: dec(1, 17, 32, 33), mag: 3.76, role: "outline" },
-        { id: "epsilon", name: "Ain", ra: ra(4, 28, 37), dec: dec(1, 19, 10, 49), mag: 3.53, role: "outline" },
-        { id: "lambda", name: "Lambda", ra: ra(4, 0, 41), dec: dec(1, 12, 29, 25), mag: 3.41, role: "outline" },
-        { id: "mu", name: "Mu", ra: ra(4, 15, 32), dec: dec(1, 8, 53, 32), mag: 4.29, role: "outline" },
-        { id: "nu", name: "Nu", ra: ra(4, 3, 9), dec: dec(1, 5, 59, 43), mag: 3.91, role: "context" },
-        { id: "xi", name: "Xi", ra: ra(3, 45, 12), dec: dec(1, 9, 43, 8), mag: 3.74, role: "context" },
-        { id: "omicron", name: "Omicron", ra: ra(3, 24, 19), dec: dec(1, 9, 1, 44), mag: 3.6, role: "context" },
-        { id: "zeta", name: "Zeta", ra: ra(5, 37, 38), dec: dec(1, 21, 8, 33), mag: 2.97, role: "outline" },
-        { id: "eta", name: "Eta", ra: ra(3, 47, 29), dec: dec(1, 24, 6, 18), mag: 2.87, role: "context" },
-        { id: "theta1", name: "Theta1", ra: ra(4, 28, 34), dec: dec(1, 15, 57, 43), mag: 3.84, role: "outline" },
-        { id: "theta2", name: "Theta2", ra: ra(4, 29, 43), dec: dec(1, 15, 52, 15), mag: 3.4, role: "outline" },
-        { id: "iota", name: "Iota", ra: ra(5, 3, 5), dec: dec(1, 21, 35, 24), mag: 4.62, role: "outline" }
-      ],
-      connectionsStandard: [
-        ["lambda", "xi"],
-        ["xi", "omicron"],
-        ["omicron", "eta"],
-        ["eta", "gamma"],
-        ["gamma", "delta"],
-        ["delta", "epsilon"],
-        ["epsilon", "theta1"],
-        ["theta1", "theta2"],
-        ["theta2", "alpha"],
-        ["alpha", "iota"],
-        ["iota", "zeta"],
-        ["zeta", "beta"],
-        ["beta", "alpha"],
-        ["alpha", "gamma"],
-        ["delta", "theta2"],
-        ["theta1", "alpha"],
-        ["alpha", "mu"],
-        ["mu", "lambda"]
-      ],
-      connectionsHard: [
-        ["lambda", "xi"],
-        ["xi", "omicron"],
-        ["omicron", "eta"],
-        ["eta", "gamma"],
-        ["gamma", "delta"],
-        ["delta", "epsilon"],
-        ["epsilon", "theta1"],
-        ["theta1", "theta2"],
-        ["theta2", "alpha"],
-        ["alpha", "iota"],
-        ["iota", "zeta"],
-        ["zeta", "beta"],
-        ["beta", "alpha"],
-        ["alpha", "gamma"],
-        ["delta", "theta2"],
-        ["theta1", "alpha"],
-        ["alpha", "mu"],
-        ["mu", "lambda"],
-        ["lambda", "nu"],
-        ["nu", "xi"],
-        ["omicron", "theta2"],
-        ["theta2", "epsilon"]
-      ],
+      stars: buildHipStars(TAURUS_HIPS, TAURUS_OUTLINE),
+      connectionsStandard: TAURUS_STANDARD,
+      connectionsHard: TAURUS_HARD,
       info: {
         meaning: "A bull’s face (the Hyades 'V') with horns reaching up; Aldebaran is the bright eye.",
         myth: "Often linked to Zeus and the bull in Greek myth, though bull imagery appears across many ancient sky traditions.",
@@ -148,58 +128,9 @@
       id: "gemini",
       name: "Gemini",
       season: "winter",
-      stars: [
-        { id: "alpha", name: "Castor", ra: ra(7, 34, 36), dec: dec(1, 31, 53, 18), mag: 1.58, role: "outline" },
-        { id: "beta", name: "Pollux", ra: ra(7, 45, 19), dec: dec(1, 28, 1, 34), mag: 1.14, role: "outline" },
-        { id: "gamma", name: "Alhena", ra: ra(6, 37, 42), dec: dec(1, 16, 23, 57), mag: 1.93, role: "outline" },
-        { id: "delta", name: "Wasat", ra: ra(7, 20, 7), dec: dec(1, 21, 58, 56), mag: 3.53, role: "outline" },
-        { id: "eps", name: "Mebsuta", ra: ra(6, 43, 55), dec: dec(1, 25, 7, 52), mag: 3.06, role: "outline" },
-        { id: "zeta", name: "Mekbuda", ra: ra(7, 4, 6), dec: dec(1, 20, 34, 13), mag: 3.79, role: "outline" },
-        { id: "eta", name: "Propus", ra: ra(6, 14, 52), dec: dec(1, 22, 30, 24), mag: 3.31, role: "outline" },
-        { id: "mu", name: "Tejat", ra: ra(6, 22, 57), dec: dec(1, 22, 30, 49), mag: 2.87, role: "outline" },
-        { id: "theta", name: "Theta", ra: ra(6, 52, 47), dec: dec(1, 33, 57, 40), mag: 3.6, role: "context" },
-        { id: "iota", name: "Iota", ra: ra(7, 25, 43), dec: dec(1, 27, 47, 53), mag: 3.78, role: "context" },
-        { id: "kappa", name: "Kappa", ra: ra(7, 44, 26), dec: dec(1, 24, 23, 53), mag: 3.57, role: "context" },
-        { id: "lambda", name: "Lambda", ra: ra(7, 18, 5), dec: dec(1, 16, 32, 25), mag: 3.58, role: "context" },
-        { id: "nu", name: "Nu", ra: ra(6, 28, 57), dec: dec(1, 20, 12, 43), mag: 4.15, role: "context" },
-        { id: "xi", name: "Xi", ra: ra(6, 45, 17), dec: dec(1, 12, 53, 44), mag: 3.35, role: "context" },
-        { id: "rho", name: "Rho", ra: ra(7, 29, 6), dec: dec(1, 31, 47, 4), mag: 4.16, role: "outline" },
-        { id: "tau", name: "Tau", ra: ra(7, 11, 8), dec: dec(1, 30, 14, 43), mag: 4.42, role: "outline" },
-        { id: "ups", name: "Upsilon", ra: ra(7, 35, 55), dec: dec(1, 26, 53, 44), mag: 4.06, role: "outline" }
-      ],
-      connectionsStandard: [
-        ["alpha", "tau"],
-        ["tau", "eps"],
-        ["eps", "mu"],
-        ["mu", "eta"],
-        ["beta", "ups"],
-        ["ups", "delta"],
-        ["delta", "zeta"],
-        ["zeta", "gamma"],
-        ["delta", "mu"]
-      ],
-      connectionsHard: [
-        ["alpha", "rho"],
-        ["alpha", "tau"],
-        ["rho", "tau"],
-        ["tau", "theta"],
-        ["beta", "ups"],
-        ["ups", "iota"],
-        ["ups", "kappa"],
-        ["ups", "delta"],
-        ["iota", "tau"],
-        ["tau", "eps"],
-        ["eps", "mu"],
-        ["mu", "eta"],
-        ["mu", "nu"],
-        ["eps", "nu"],
-        ["delta", "zeta"],
-        ["zeta", "gamma"],
-        ["gamma", "xi"],
-        ["xi", "lambda"],
-        ["delta", "lambda"],
-        ["delta", "mu"]
-      ],
+      stars: buildHipStars(GEMINI_HIPS, GEMINI_OUTLINE),
+      connectionsStandard: GEMINI_STANDARD,
+      connectionsHard: GEMINI_HARD,
       info: {
         meaning: "The Twins — Castor and Pollux.",
         myth: "In Greek myth, the twins were brothers, one mortal and one divine.",
@@ -210,47 +141,9 @@
       id: "canis_major",
       name: "Canis Major",
       season: "winter",
-      stars: [
-        { id: "alpha", name: "Sirius", ra: ra(6, 45, 8), dec: dec(-1, 16, 42, 58), mag: -1.46, role: "outline" },
-        { id: "beta", name: "Mirzam", ra: ra(6, 22, 42), dec: dec(-1, 17, 57, 21), mag: 1.98, role: "outline" },
-        { id: "gamma", name: "Muliphein", ra: ra(7, 3, 46), dec: dec(-1, 15, 37, 59), mag: 4.12, role: "outline" },
-        { id: "delta", name: "Wezen", ra: ra(7, 8, 23), dec: dec(-1, 26, 23, 36), mag: 1.83, role: "outline" },
-        { id: "epsilon", name: "Adhara", ra: ra(6, 58, 38), dec: dec(-1, 28, 58, 19), mag: 1.5, role: "outline" },
-        { id: "eta", name: "Aludra", ra: ra(7, 24, 5), dec: dec(-1, 29, 18, 12), mag: 2.45, role: "outline" },
-        { id: "kappa", name: "Kappa", ra: ra(6, 49, 51), dec: dec(-1, 32, 30, 30), mag: 3.96, role: "context" },
-        { id: "iota", name: "Iota", ra: ra(6, 56, 8), dec: dec(-1, 17, 3, 15), mag: 4.36, role: "context" },
-        { id: "theta", name: "Theta", ra: ra(7, 2, 17), dec: dec(-1, 12, 30, 46), mag: 4.07, role: "context" },
-        { id: "zeta", name: "Furud", ra: ra(6, 20, 19), dec: dec(-1, 30, 3, 40), mag: 3.02, role: "context" },
-        { id: "omicron", name: "Omicron", ra: ra(6, 54, 7), dec: dec(-1, 24, 11, 12), mag: 3.79, role: "context" },
-        { id: "sigma", name: "Sigma", ra: ra(7, 1, 43), dec: dec(-1, 27, 56, 6), mag: 3.47, role: "context" }
-      ],
-      connectionsStandard: [
-        ["beta", "alpha"],
-        ["alpha", "epsilon"],
-        ["epsilon", "delta"],
-        ["delta", "eta"],
-        ["delta", "gamma"],
-        ["gamma", "alpha"]
-      ],
-      connectionsHard: [
-        ["beta", "alpha"],
-        ["alpha", "epsilon"],
-        ["epsilon", "delta"],
-        ["delta", "eta"],
-        ["delta", "gamma"],
-        ["gamma", "alpha"],
-        ["alpha", "iota"],
-        ["iota", "epsilon"],
-        ["epsilon", "omicron"],
-        ["omicron", "delta"],
-        ["delta", "sigma"],
-        ["sigma", "eta"],
-        ["epsilon", "kappa"],
-        ["kappa", "zeta"],
-        ["zeta", "beta"],
-        ["beta", "theta"],
-        ["theta", "gamma"]
-      ],
+      stars: buildHipStars(CANIS_MAJOR_HIPS, CANIS_MAJOR_OUTLINE),
+      connectionsStandard: CANIS_MAJOR_STANDARD,
+      connectionsHard: CANIS_MAJOR_HARD,
       info: {
         meaning: "Anchored by Sirius (the brightest star in the night sky).",
         myth: "The 'Greater Dog' often accompanies Orion in sky lore.",
