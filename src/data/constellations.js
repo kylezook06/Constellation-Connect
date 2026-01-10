@@ -183,7 +183,8 @@
         ["beta", "ups"],
         ["ups", "delta"],
         ["delta", "zeta"],
-        ["zeta", "gamma"]
+        ["zeta", "gamma"],
+        ["delta", "mu"]
       ],
       connectionsHard: [
         ["alpha", "rho"],
@@ -204,7 +205,8 @@
         ["zeta", "gamma"],
         ["gamma", "xi"],
         ["xi", "lambda"],
-        ["delta", "lambda"]
+        ["delta", "lambda"],
+        ["delta", "mu"]
       ],
       info: {
         meaning: "The Twins — Castor and Pollux.",
