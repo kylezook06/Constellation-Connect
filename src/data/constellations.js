@@ -12,75 +12,60 @@
       name: "Orion",
       season: "winter",
       stars: [
-        {
-          id: "a",
-          ra: 93.75,
-          dec: 40
-        },
-        {
-          id: "b",
-          ra: 157.5,
-          dec: 33.33
-        },
-        {
-          id: "c",
-          ra: 116.25,
-          dec: 8.33
-        },
-        {
-          id: "d",
-          ra: 129.38,
-          dec: 1.67
-        },
-        {
-          id: "e",
-          ra: 142.5,
-          dec: -5
-        },
-        {
-          id: "f",
-          ra: 105,
-          dec: -50
-        },
-        {
-          id: "g",
-          ra: 172.5,
-          dec: -56.67
-        }
+        { id: "alpha", name: "Betelgeuse", ra: ra(5, 55, 10), dec: dec(1, 7, 24, 25), mag: 0.42, role: "outline" },
+        { id: "beta", name: "Rigel", ra: ra(5, 14, 32), dec: dec(-1, 8, 12, 6), mag: 0.13, role: "outline" },
+        { id: "gamma", name: "Bellatrix", ra: ra(5, 25, 7), dec: dec(1, 6, 20, 59), mag: 1.64, role: "outline" },
+        { id: "delta", name: "Mintaka", ra: ra(5, 32, 0), dec: dec(-1, 0, 17, 56), mag: 2.25, role: "outline" },
+        { id: "epsilon", name: "Alnilam", ra: ra(5, 36, 12), dec: dec(-1, 1, 12, 7), mag: 1.69, role: "outline" },
+        { id: "zeta", name: "Alnitak", ra: ra(5, 40, 45), dec: dec(-1, 1, 56, 34), mag: 1.74, role: "outline" },
+        { id: "eta", name: "Saiph", ra: ra(5, 47, 45), dec: dec(-1, 9, 40, 11), mag: 2.07, role: "outline" },
+        { id: "kappa", name: "Kappa", ra: ra(5, 47, 45), dec: dec(-1, 9, 40, 11), mag: 2.07, role: "context" },
+        { id: "iota", name: "Hatysa", ra: ra(5, 35, 26), dec: dec(-1, 5, 54, 35), mag: 2.75, role: "context" },
+        { id: "pi1", name: "Pi1", ra: ra(4, 49, 50), dec: dec(1, 6, 57, 40), mag: 4.65, role: "context" },
+        { id: "pi2", name: "Pi2", ra: ra(4, 50, 50), dec: dec(1, 6, 57, 40), mag: 4.64, role: "context" },
+        { id: "pi3", name: "Pi3", ra: ra(4, 58, 32), dec: dec(1, 6, 57, 40), mag: 3.19, role: "context" },
+        { id: "pi4", name: "Pi4", ra: ra(5, 6, 52), dec: dec(1, 6, 57, 40), mag: 3.68, role: "context" },
+        { id: "pi5", name: "Pi5", ra: ra(5, 12, 26), dec: dec(1, 6, 57, 40), mag: 3.71, role: "context" },
+        { id: "pi6", name: "Pi6", ra: ra(5, 17, 56), dec: dec(1, 6, 57, 40), mag: 4.47, role: "context" },
+        { id: "lambda", name: "Meissa", ra: ra(5, 35, 8), dec: dec(1, 9, 56, 3), mag: 3.39, role: "context" },
+        { id: "mu", name: "Mu", ra: ra(5, 32, 8), dec: dec(1, 9, 56, 3), mag: 4.12, role: "context" },
+        { id: "nu", name: "Nu", ra: ra(5, 55, 11), dec: dec(1, 7, 24, 25), mag: 4.42, role: "context" }
       ],
-      connections: [
-        [
-          "a",
-          "b"
-        ],
-        [
-          "a",
-          "c"
-        ],
-        [
-          "c",
-          "d"
-        ],
-        [
-          "d",
-          "e"
-        ],
-        [
-          "b",
-          "e"
-        ],
-        [
-          "c",
-          "f"
-        ],
-        [
-          "e",
-          "g"
-        ],
-        [
-          "f",
-          "g"
-        ]
+      connectionsStandard: [
+        ["alpha", "gamma"],
+        ["gamma", "delta"],
+        ["delta", "epsilon"],
+        ["epsilon", "zeta"],
+        ["zeta", "beta"],
+        ["beta", "eta"],
+        ["eta", "alpha"],
+        ["delta", "beta"],
+        ["gamma", "epsilon"]
+      ],
+      connectionsHard: [
+        ["alpha", "gamma"],
+        ["gamma", "delta"],
+        ["delta", "epsilon"],
+        ["epsilon", "zeta"],
+        ["zeta", "beta"],
+        ["beta", "eta"],
+        ["eta", "alpha"],
+        ["delta", "beta"],
+        ["gamma", "epsilon"],
+        ["lambda", "delta"],
+        ["lambda", "gamma"],
+        ["lambda", "pi3"],
+        ["pi3", "pi4"],
+        ["pi4", "pi5"],
+        ["pi5", "pi6"],
+        ["pi6", "beta"],
+        ["pi3", "pi2"],
+        ["pi2", "pi1"],
+        ["pi1", "alpha"],
+        ["alpha", "mu"],
+        ["mu", "delta"],
+        ["mu", "epsilon"],
+        ["nu", "alpha"]
       ],
       info: {
         meaning: "A distinctive hunter figure; the three-star belt is the easiest anchor.",
@@ -93,58 +78,65 @@
       name: "Taurus",
       season: "winter",
       stars: [
-        {
-          id: "a",
-          ra: 210,
-          dec: 6.67
-        },
-        {
-          id: "b",
-          ra: 189.38,
-          dec: 21.67
-        },
-        {
-          id: "c",
-          ra: 228.75,
-          dec: 21.67
-        },
-        {
-          id: "d",
-          ra: 247.5,
-          dec: 40
-        },
-        {
-          id: "e",
-          ra: 270,
-          dec: 53.33
-        },
-        {
-          id: "f",
-          ra: 243.75,
-          dec: -13.33
-        }
+        { id: "alpha", name: "Aldebaran", ra: ra(4, 35, 55), dec: dec(1, 16, 30, 33), mag: 0.85, role: "outline" },
+        { id: "beta", name: "Elnath", ra: ra(5, 26, 17), dec: dec(1, 28, 36, 27), mag: 1.65, role: "outline" },
+        { id: "gamma", name: "Hyadum I", ra: ra(4, 19, 47), dec: dec(1, 15, 37, 39), mag: 3.65, role: "outline" },
+        { id: "delta", name: "Hyadum II", ra: ra(4, 22, 56), dec: dec(1, 17, 32, 33), mag: 3.76, role: "outline" },
+        { id: "epsilon", name: "Ain", ra: ra(4, 28, 37), dec: dec(1, 19, 10, 49), mag: 3.53, role: "outline" },
+        { id: "lambda", name: "Lambda", ra: ra(4, 0, 41), dec: dec(1, 12, 29, 25), mag: 3.41, role: "outline" },
+        { id: "mu", name: "Mu", ra: ra(4, 15, 32), dec: dec(1, 8, 53, 32), mag: 4.29, role: "outline" },
+        { id: "nu", name: "Nu", ra: ra(4, 3, 9), dec: dec(1, 5, 59, 43), mag: 3.91, role: "context" },
+        { id: "xi", name: "Xi", ra: ra(3, 45, 12), dec: dec(1, 9, 43, 8), mag: 3.74, role: "context" },
+        { id: "omicron", name: "Omicron", ra: ra(3, 24, 19), dec: dec(1, 9, 1, 44), mag: 3.6, role: "context" },
+        { id: "zeta", name: "Zeta", ra: ra(5, 37, 38), dec: dec(1, 21, 8, 33), mag: 2.97, role: "outline" },
+        { id: "eta", name: "Eta", ra: ra(3, 47, 29), dec: dec(1, 24, 6, 18), mag: 2.87, role: "context" },
+        { id: "theta1", name: "Theta1", ra: ra(4, 28, 34), dec: dec(1, 15, 57, 43), mag: 3.84, role: "outline" },
+        { id: "theta2", name: "Theta2", ra: ra(4, 29, 43), dec: dec(1, 15, 52, 15), mag: 3.4, role: "outline" },
+        { id: "iota", name: "Iota", ra: ra(5, 3, 5), dec: dec(1, 21, 35, 24), mag: 4.62, role: "outline" }
       ],
-      connections: [
-        [
-          "b",
-          "a"
-        ],
-        [
-          "a",
-          "c"
-        ],
-        [
-          "a",
-          "f"
-        ],
-        [
-          "c",
-          "d"
-        ],
-        [
-          "d",
-          "e"
-        ]
+      connectionsStandard: [
+        ["lambda", "xi"],
+        ["xi", "omicron"],
+        ["omicron", "eta"],
+        ["eta", "gamma"],
+        ["gamma", "delta"],
+        ["delta", "epsilon"],
+        ["epsilon", "theta1"],
+        ["theta1", "theta2"],
+        ["theta2", "alpha"],
+        ["alpha", "iota"],
+        ["iota", "zeta"],
+        ["zeta", "beta"],
+        ["beta", "alpha"],
+        ["alpha", "gamma"],
+        ["delta", "theta2"],
+        ["theta1", "alpha"],
+        ["alpha", "mu"],
+        ["mu", "lambda"]
+      ],
+      connectionsHard: [
+        ["lambda", "xi"],
+        ["xi", "omicron"],
+        ["omicron", "eta"],
+        ["eta", "gamma"],
+        ["gamma", "delta"],
+        ["delta", "epsilon"],
+        ["epsilon", "theta1"],
+        ["theta1", "theta2"],
+        ["theta2", "alpha"],
+        ["alpha", "iota"],
+        ["iota", "zeta"],
+        ["zeta", "beta"],
+        ["beta", "alpha"],
+        ["alpha", "gamma"],
+        ["delta", "theta2"],
+        ["theta1", "alpha"],
+        ["alpha", "mu"],
+        ["mu", "lambda"],
+        ["lambda", "nu"],
+        ["nu", "xi"],
+        ["omicron", "theta2"],
+        ["theta2", "epsilon"]
       ],
       info: {
         meaning: "A bull’s face (the Hyades 'V') with horns reaching up; Aldebaran is the bright eye.",
@@ -219,53 +211,45 @@
       name: "Canis Major",
       season: "winter",
       stars: [
-        {
-          id: "a",
-          ra: 195,
-          dec: -16.67
-        },
-        {
-          id: "b",
-          ra: 221.25,
-          dec: -1.67
-        },
-        {
-          id: "c",
-          ra: 243.75,
-          dec: -20
-        },
-        {
-          id: "d",
-          ra: 228.75,
-          dec: -43.33
-        },
-        {
-          id: "e",
-          ra: 202.5,
-          dec: -46.67
-        }
+        { id: "alpha", name: "Sirius", ra: ra(6, 45, 8), dec: dec(-1, 16, 42, 58), mag: -1.46, role: "outline" },
+        { id: "beta", name: "Mirzam", ra: ra(6, 22, 42), dec: dec(-1, 17, 57, 21), mag: 1.98, role: "outline" },
+        { id: "gamma", name: "Muliphein", ra: ra(7, 3, 46), dec: dec(-1, 15, 37, 59), mag: 4.12, role: "outline" },
+        { id: "delta", name: "Wezen", ra: ra(7, 8, 23), dec: dec(-1, 26, 23, 36), mag: 1.83, role: "outline" },
+        { id: "epsilon", name: "Adhara", ra: ra(6, 58, 38), dec: dec(-1, 28, 58, 19), mag: 1.5, role: "outline" },
+        { id: "eta", name: "Aludra", ra: ra(7, 24, 5), dec: dec(-1, 29, 18, 12), mag: 2.45, role: "outline" },
+        { id: "kappa", name: "Kappa", ra: ra(6, 49, 51), dec: dec(-1, 32, 30, 30), mag: 3.96, role: "context" },
+        { id: "iota", name: "Iota", ra: ra(6, 56, 8), dec: dec(-1, 17, 3, 15), mag: 4.36, role: "context" },
+        { id: "theta", name: "Theta", ra: ra(7, 2, 17), dec: dec(-1, 12, 30, 46), mag: 4.07, role: "context" },
+        { id: "zeta", name: "Furud", ra: ra(6, 20, 19), dec: dec(-1, 30, 3, 40), mag: 3.02, role: "context" },
+        { id: "omicron", name: "Omicron", ra: ra(6, 54, 7), dec: dec(-1, 24, 11, 12), mag: 3.79, role: "context" },
+        { id: "sigma", name: "Sigma", ra: ra(7, 1, 43), dec: dec(-1, 27, 56, 6), mag: 3.47, role: "context" }
       ],
-      connections: [
-        [
-          "b",
-          "a"
-        ],
-        [
-          "a",
-          "c"
-        ],
-        [
-          "c",
-          "d"
-        ],
-        [
-          "d",
-          "e"
-        ],
-        [
-          "e",
-          "a"
-        ]
+      connectionsStandard: [
+        ["beta", "alpha"],
+        ["alpha", "epsilon"],
+        ["epsilon", "delta"],
+        ["delta", "eta"],
+        ["delta", "gamma"],
+        ["gamma", "alpha"]
+      ],
+      connectionsHard: [
+        ["beta", "alpha"],
+        ["alpha", "epsilon"],
+        ["epsilon", "delta"],
+        ["delta", "eta"],
+        ["delta", "gamma"],
+        ["gamma", "alpha"],
+        ["alpha", "iota"],
+        ["iota", "epsilon"],
+        ["epsilon", "omicron"],
+        ["omicron", "delta"],
+        ["delta", "sigma"],
+        ["sigma", "eta"],
+        ["epsilon", "kappa"],
+        ["kappa", "zeta"],
+        ["zeta", "beta"],
+        ["beta", "theta"],
+        ["theta", "gamma"]
       ],
       info: {
         meaning: "Anchored by Sirius (the brightest star in the night sky).",
