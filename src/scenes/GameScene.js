@@ -239,10 +239,16 @@ class GameScene extends Phaser.Scene {
   }
 
   _getConnectionsForMode() {
+    if (this.requiredConnections) return this.requiredConnections;
     const hardMode = !!this.registry.get("hardMode");
-    if (hardMode && Array.isArray(this.constellation.connectionsHard)) return this.constellation.connectionsHard;
-    if (!hardMode && Array.isArray(this.constellation.connectionsStandard)) return this.constellation.connectionsStandard;
-    return this.constellation.connections || [];
+    const required = hardMode
+      ? (this.constellation.connectionsHard || this.constellation.connections || [])
+      : (this.constellation.connectionsStandard || this.constellation.connections || []);
+    const normalizeId = (value) => {
+      const numeric = Number(value);
+      return Number.isNaN(numeric) ? value : numeric;
+    };
+    return required.map(([a, b]) => [normalizeId(a), normalizeId(b)]);
   }
 
   _wouldCrossExisting(aId, bId) {
@@ -517,24 +523,21 @@ class GameScene extends Phaser.Scene {
     this.selectedStarId = null;
 
     this.constellation = newConstellation;
-    // Choose edge set based on hardMode, but keep backwards compatibility.
-    const hard = !!this.registry.get("hardMode");
-    if (this.constellation.connectionsStandard && this.constellation.connectionsHard) {
-      this.constellation.connections = hard
-        ? this.constellation.connectionsHard
-        : this.constellation.connectionsStandard;
-    } else if (!this.constellation.connections) {
-      // If somehow missing, fall back to standard/hard if present
-      this.constellation.connections = hard
-        ? (this.constellation.connectionsHard || [])
-        : (this.constellation.connectionsStandard || []);
-    }
-
     this.requiredEdges = new Set();
     this.correctEdges = new Set();
     this.wrongEdges = new Set();
 
-    for (const [a, b] of this._getConnectionsForMode()) {
+    const hardMode = !!this.registry.get("hardMode");
+    const required = hardMode
+      ? (this.constellation.connectionsHard || this.constellation.connections || [])
+      : (this.constellation.connectionsStandard || this.constellation.connections || []);
+    const normalizeId = (value) => {
+      const numeric = Number(value);
+      return Number.isNaN(numeric) ? value : numeric;
+    };
+    this.requiredConnections = required.map(([a, b]) => [normalizeId(a), normalizeId(b)]);
+
+    for (const [a, b] of this.requiredConnections) {
       this.requiredEdges.add(this._edgeKey(a, b));
     }
 
@@ -549,7 +552,6 @@ class GameScene extends Phaser.Scene {
     this.starsGfx = this.add.graphics();
     const starsGfx = this.starsGfx;
 
-    const hardMode = !!this.registry.get("hardMode");
     for (const s of this.constellation.stars) {
       const pos = layoutMap.get(s.id);
       if (!pos) continue;

@@ -118,23 +118,43 @@
   const TAURUS_HIPS = TAURUS_HARD.flat();
 
   const GEMINI_STANDARD = [
-    [36850, 37826],
-    [36850, 35550],
-    [35550, 37826],
-    [35550, 31681],
-    [31681, 29655],
+    // “Left twin” chain
+    [36850, 34693],
+    [34693, 32246],
+    [32246, 30883],
+    [30883, 29655],
     [29655, 28734],
-    [35550, 32246],
-    [32246, 34088]
+
+    // “Right twin” chain
+    [30883, 31681],
+    [31681, 34088],
+    [34088, 35550],
+    [35550, 37826]
   ];
   const GEMINI_HARD = [
-    ...GEMINI_STANDARD,
-    [35550, 36046],
-    [36046, 36962],
+    // From Stellarium western/index.json polylines, expanded to edge pairs:
+    [31681, 34088],
+    [34088, 35550],
+    [35550, 35350],
+    [35350, 32362],
+
+    [35550, 36962],
     [36962, 37740],
-    [37740, 37826],
-    [29655, 32362],
-    [36850, 34693]
+
+    [36962, 37826],
+
+    [36962, 36046],
+    [36046, 34693],
+    [34693, 36850],
+
+    [34693, 33018],
+
+    [34693, 32246],
+    [32246, 30883],
+
+    [32246, 30343],
+    [30343, 29655],
+    [29655, 28734]
   ];
   const GEMINI_OUTLINE = new Set(GEMINI_STANDARD.flat());
   const GEMINI_HIPS = GEMINI_HARD.flat();
@@ -206,87 +226,13 @@
       id: "gemini",
       name: "Gemini",
       season: "winter",
-      stars: [
-        // --- Normal mode (main outline stars) ---
-        { id: "alpha", name: "Castor", ra: ra(7, 34, 36), dec: dec(1, 31, 53, 18), mag: 1.58, role: "outline" },
-        { id: "beta", name: "Pollux", ra: ra(7, 45, 19), dec: dec(1, 28, 1, 34), mag: 1.14, role: "outline" },
-        { id: "gamma", name: "Alhena", ra: ra(6, 37, 42), dec: dec(1, 16, 23, 57), mag: 1.93, role: "outline" },
-        { id: "delta", name: "Wasat", ra: ra(7, 20, 7), dec: dec(1, 21, 58, 56), mag: 3.53, role: "outline" },
-        { id: "eps", name: "Mebsuta", ra: ra(6, 43, 55), dec: dec(1, 25, 7, 52), mag: 3.06, role: "outline" },
-        { id: "zeta", name: "Mekbuda", ra: ra(7, 4, 6), dec: dec(1, 20, 34, 13), mag: 3.79, role: "outline" },
-        { id: "eta", name: "Propus", ra: ra(6, 14, 52), dec: dec(1, 22, 30, 24), mag: 3.31, role: "outline" },
-        { id: "mu", name: "Tejat", ra: ra(6, 22, 57), dec: dec(1, 22, 30, 49), mag: 2.87, role: "outline" },
-
-        // --- Hard mode extras (faint in Normal; all become clickable in Hard) ---
-        { id: "theta", name: "Theta", ra: ra(6, 52, 47), dec: dec(1, 33, 57, 40), mag: 3.6, role: "context" },
-        { id: "iota", name: "Iota", ra: ra(7, 25, 43), dec: dec(1, 27, 47, 53), mag: 3.78, role: "context" },
-        { id: "kappa", name: "Kappa", ra: ra(7, 44, 26), dec: dec(1, 24, 23, 53), mag: 3.57, role: "context" },
-        { id: "lambda", name: "Lambda", ra: ra(7, 18, 5), dec: dec(1, 16, 32, 25), mag: 3.58, role: "context" },
-        { id: "nu", name: "Nu", ra: ra(6, 28, 57), dec: dec(1, 20, 12, 43), mag: 4.15, role: "context" },
-        { id: "xi", name: "Xi", ra: ra(6, 45, 17), dec: dec(1, 12, 53, 44), mag: 3.35, role: "context" },
-        { id: "rho", name: "Rho", ra: ra(7, 29, 6), dec: dec(1, 31, 47, 4), mag: 4.16, role: "context" },
-        { id: "tau", name: "Tau", ra: ra(7, 11, 8), dec: dec(1, 30, 14, 43), mag: 4.42, role: "context" },
-        { id: "ups", name: "Upsilon", ra: ra(7, 35, 55), dec: dec(1, 26, 53, 44), mag: 4.06, role: "context" }
-      ],
-
-      // Normal: only the 8 “main” stars, but still one connected figure.
-      // (This is the missing connector you called out: eps <-> delta)
-      connectionsStandard: [
-        // West twin (Castor side)
-        ["alpha", "eps"],
-        ["eps", "mu"],
-        ["mu", "eta"],
-
-        // East twin (Pollux side)
-        ["beta", "delta"],
-        ["delta", "zeta"],
-        ["zeta", "gamma"],
-
-        // Bridge so the constellation is one connected graph
-        ["eps", "delta"]
-      ],
-
-      // Hard: add the fainter stars and require their edges too (Wikipedia-style “fuller” stick figure).
-      // NOTE: if you want a different hard-line convention, ONLY edit this array.
-      connectionsHard: [
-        // Keep the whole Normal figure
-        ["alpha", "eps"],
-        ["eps", "mu"],
-        ["mu", "eta"],
-        ["beta", "delta"],
-        ["delta", "zeta"],
-        ["zeta", "gamma"],
-        ["eps", "delta"],
-
-        // Upper/torso refinements
-        ["alpha", "rho"],
-        ["rho", "theta"],
-        ["theta", "tau"],
-        ["tau", "alpha"],
-
-        ["beta", "ups"],
-        ["ups", "iota"],
-        ["iota", "theta"],
-
-        ["ups", "kappa"],
-        ["kappa", "delta"],
-
-        // Mid/low extra structure (ties the extra stars into the legs/feet region)
-        ["mu", "nu"],
-        ["eps", "nu"],
-        ["nu", "zeta"],
-
-        ["delta", "lambda"],
-        ["lambda", "xi"],
-        ["xi", "gamma"],
-
-        // (optional but common) second bridge lower down
-        ["mu", "delta"]
-      ],
+      stars: buildHipStars(GEMINI_HIPS, GEMINI_OUTLINE, GEMINI_CATALOG),
+      connectionsStandard: GEMINI_STANDARD,
+      connectionsHard: GEMINI_HARD,
       info: {
         meaning: "The Twins — Castor and Pollux.",
         myth: "In Greek myth, the twins were brothers, one mortal and one divine.",
-        funFact: "Gemini is prominent in northern winter skies, between Taurus and Cancer."
+        funFact: "Gemini is associated with duality and is prominent in winter skies."
       }
     },
     {
