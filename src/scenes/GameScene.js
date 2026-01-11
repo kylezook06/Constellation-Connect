@@ -161,6 +161,60 @@ class GameScene extends Phaser.Scene {
     return { x, y };
   }
 
+  _projectRaDecToScreen(stars, width, height, padding = 80) {
+    // Filter only stars that have ra/dec
+    const radec = stars.filter((s) => typeof s.ra === "number" && typeof s.dec === "number");
+    if (radec.length === 0) return stars;
+
+    // --- Fix RA wraparound ---
+    // Convert RA degrees to radians on a circle, average direction, then unwrap around that center.
+    const ras = radec.map((s) => s.ra);
+    const toRad = (d) => (d * Math.PI) / 180;
+    const toDeg = (r) => (r * 180) / Math.PI;
+
+    const avgX = ras.reduce((a, d) => a + Math.cos(toRad(d)), 0) / ras.length;
+    const avgY = ras.reduce((a, d) => a + Math.sin(toRad(d)), 0) / ras.length;
+    const center = (toDeg(Math.atan2(avgY, avgX)) + 360) % 360;
+
+    // unwrap RA so values stay near the center (min span)
+    const unwrap = (d) => {
+      let x = d;
+      while (x - center > 180) x -= 360;
+      while (x - center < -180) x += 360;
+      return x;
+    };
+
+    const unwrapped = radec.map((s) => ({ ...s, _raU: unwrap(s.ra) }));
+
+    const minRa = Math.min(...unwrapped.map((s) => s._raU));
+    const maxRa = Math.max(...unwrapped.map((s) => s._raU));
+    const minDec = Math.min(...unwrapped.map((s) => s.dec));
+    const maxDec = Math.max(...unwrapped.map((s) => s.dec));
+
+    const spanRa = Math.max(1e-6, maxRa - minRa);
+    const spanDec = Math.max(1e-6, maxDec - minDec);
+
+    const x0 = padding;
+    const x1 = width - padding;
+    const y0 = padding;
+    const y1 = height - padding;
+
+    // IMPORTANT: invert Y so higher dec appears higher on screen
+    for (const s of stars) {
+      if (typeof s.x === "number" && typeof s.y === "number") continue; // keep explicit x/y
+      if (typeof s.ra !== "number" || typeof s.dec !== "number") continue;
+
+      const raU = unwrap(s.ra);
+      const tX = (raU - minRa) / spanRa;
+      const tY = (s.dec - minDec) / spanDec;
+
+      s.x = x0 + tX * (x1 - x0);
+      s.y = y1 - tY * (y1 - y0);
+    }
+
+    return stars;
+  }
+
   _layoutFromRADec(stars, box) {
     let ra0 = 0;
     let dec0 = 0;
@@ -398,10 +452,13 @@ class GameScene extends Phaser.Scene {
 
     if (!visible) return;
 
-    const hasRaDec = this.constellation.stars.every((s) => typeof s.ra === "number" && typeof s.dec === "number");
-    const fallbackLayout = hasRaDec
-      ? this._layoutFromRADec(this.constellation.stars, { x: 0, y: 60, w: this.scale.width, h: this.scale.height - 60 })
-      : null;
+    const stars = this.constellation.stars;
+    this._projectRaDecToScreen(stars, this.scale.width, this.scale.height - 60);
+    const fallbackLayout = new Map(
+      stars
+        .filter((s) => typeof s.x === "number" && typeof s.y === "number")
+        .map((s) => [s.id, { x: s.x, y: s.y }])
+    );
 
     // Faint blueprint of required connections
     this.hintGfx.lineStyle(2, 0xffffff, 0.18);
@@ -416,7 +473,7 @@ class GameScene extends Phaser.Scene {
         ay = a.y;
         bx = b.x;
         by = b.y;
-      } else if (fallbackLayout) {
+      } else if (fallbackLayout.size > 0) {
         const fa = fallbackLayout.get(aId);
         const fb = fallbackLayout.get(bId);
         if (!fa || !fb) continue;
@@ -541,10 +598,13 @@ class GameScene extends Phaser.Scene {
       this.requiredEdges.add(this._edgeKey(a, b));
     }
 
-    const hasRaDec = this.constellation.stars.every((s) => typeof s.ra === "number" && typeof s.dec === "number");
-    const layoutMap = hasRaDec
-      ? this._layoutFromRADec(this.constellation.stars, { x: 0, y: 60, w: this.scale.width, h: this.scale.height - 60 })
-      : new Map(this.constellation.stars.map((s) => [s.id, { x: s.x, y: s.y }]));
+    const stars = this.constellation.stars;
+    this._projectRaDecToScreen(stars, this.scale.width, this.scale.height - 60);
+    const layoutMap = new Map(
+      stars
+        .filter((s) => typeof s.x === "number" && typeof s.y === "number")
+        .map((s) => [s.id, { x: s.x, y: s.y }])
+    );
 
     if (this.starsGfx) {
       this.starsGfx.destroy();

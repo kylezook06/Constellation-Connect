@@ -240,13 +240,81 @@
       id: "gemini",
       name: "Gemini",
       season: "winter",
-      stars: buildHipStars(GEMINI_HIPS, GEMINI_OUTLINE, GEMINI_CATALOG),
-      connectionsStandard: GEMINI_STANDARD,
-      connectionsHard: GEMINI_HARD,
+      stars: [
+        // --- Normal mode (main outline stars) ---
+        { id: "alpha", name: "Castor", ra: ra(7, 34, 36), dec: dec(1, 31, 53, 18), mag: 1.58, role: "outline" },
+        { id: "beta", name: "Pollux", ra: ra(7, 45, 19), dec: dec(1, 28, 1, 34), mag: 1.14, role: "outline" },
+        { id: "gamma", name: "Alhena", ra: ra(6, 37, 42), dec: dec(1, 16, 23, 57), mag: 1.93, role: "outline" },
+        { id: "delta", name: "Wasat", ra: ra(7, 20, 7), dec: dec(1, 21, 58, 56), mag: 3.53, role: "outline" },
+        { id: "eps", name: "Mebsuta", ra: ra(6, 43, 55), dec: dec(1, 25, 7, 52), mag: 3.06, role: "outline" },
+        { id: "zeta", name: "Mekbuda", ra: ra(7, 4, 6), dec: dec(1, 20, 34, 13), mag: 3.79, role: "outline" },
+        { id: "eta", name: "Propus", ra: ra(6, 14, 52), dec: dec(1, 22, 30, 24), mag: 3.31, role: "outline" },
+        { id: "mu", name: "Tejat", ra: ra(6, 22, 57), dec: dec(1, 22, 30, 49), mag: 2.87, role: "outline" },
+
+        // --- Hard mode extras (faint in Normal; all become clickable in Hard) ---
+        { id: "theta", name: "Theta", ra: ra(6, 52, 47), dec: dec(1, 33, 57, 40), mag: 3.6, role: "context" },
+        { id: "iota", name: "Iota", ra: ra(7, 25, 43), dec: dec(1, 27, 47, 53), mag: 3.78, role: "context" },
+        { id: "kappa", name: "Kappa", ra: ra(7, 44, 26), dec: dec(1, 24, 23, 53), mag: 3.57, role: "context" },
+        { id: "lambda", name: "Lambda", ra: ra(7, 18, 5), dec: dec(1, 16, 32, 25), mag: 3.58, role: "context" },
+        { id: "nu", name: "Nu", ra: ra(6, 28, 57), dec: dec(1, 20, 12, 43), mag: 4.15, role: "context" },
+        { id: "xi", name: "Xi", ra: ra(6, 45, 17), dec: dec(1, 12, 53, 44), mag: 3.35, role: "context" },
+        { id: "rho", name: "Rho", ra: ra(7, 29, 6), dec: dec(1, 31, 47, 4), mag: 4.16, role: "context" },
+        { id: "tau", name: "Tau", ra: ra(7, 11, 8), dec: dec(1, 30, 14, 43), mag: 4.42, role: "context" },
+        { id: "ups", name: "Upsilon", ra: ra(7, 35, 55), dec: dec(1, 26, 53, 44), mag: 4.06, role: "context" }
+      ],
+      connectionsStandard: [
+        // West twin (Castor side)
+        ["alpha", "eps"],
+        ["eps", "mu"],
+        ["mu", "eta"],
+
+        // East twin (Pollux side)
+        ["beta", "delta"],
+        ["delta", "zeta"],
+        ["zeta", "gamma"],
+
+        // Bridge so the constellation is one connected graph
+        ["eps", "delta"]
+      ],
+      connectionsHard: [
+        // Keep the whole Normal figure
+        ["alpha", "eps"],
+        ["eps", "mu"],
+        ["mu", "eta"],
+        ["beta", "delta"],
+        ["delta", "zeta"],
+        ["zeta", "gamma"],
+        ["eps", "delta"],
+
+        // Upper/torso refinements
+        ["alpha", "rho"],
+        ["rho", "theta"],
+        ["theta", "tau"],
+        ["tau", "alpha"],
+
+        ["beta", "ups"],
+        ["ups", "iota"],
+        ["iota", "theta"],
+
+        ["ups", "kappa"],
+        ["kappa", "delta"],
+
+        // Mid/low extra structure
+        ["mu", "nu"],
+        ["eps", "nu"],
+        ["nu", "zeta"],
+
+        ["delta", "lambda"],
+        ["lambda", "xi"],
+        ["xi", "gamma"],
+
+        // Optional but common: second bridge lower down
+        ["mu", "delta"]
+      ],
       info: {
         meaning: "The Twins — Castor and Pollux.",
         myth: "In Greek myth, the twins were brothers, one mortal and one divine.",
-        funFact: "Gemini is associated with duality and is prominent in winter skies."
+        funFact: "Gemini is prominent in northern winter skies, between Taurus and Cancer."
       }
     },
     {
