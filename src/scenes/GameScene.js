@@ -517,6 +517,18 @@ class GameScene extends Phaser.Scene {
     this.selectedStarId = null;
 
     this.constellation = newConstellation;
+    // Choose edge set based on hardMode, but keep backwards compatibility.
+    const hard = !!this.registry.get("hardMode");
+    if (this.constellation.connectionsStandard && this.constellation.connectionsHard) {
+      this.constellation.connections = hard
+        ? this.constellation.connectionsHard
+        : this.constellation.connectionsStandard;
+    } else if (!this.constellation.connections) {
+      // If somehow missing, fall back to standard/hard if present
+      this.constellation.connections = hard
+        ? (this.constellation.connectionsHard || [])
+        : (this.constellation.connectionsStandard || []);
+    }
 
     this.requiredEdges = new Set();
     this.correctEdges = new Set();

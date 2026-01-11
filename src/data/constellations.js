@@ -4,18 +4,77 @@
 (function () {
   const ra = (h, m, s = 0) => (h + m / 60 + s / 3600) * 15;
   const dec = (sign, d, m = 0, s = 0) => sign * (d + m / 60 + s / 3600);
-  const buildHipStars = (hips, outlineHips) => {
+  const buildHipStars = (hips, outlineHips, catalog = null) => {
     const unique = Array.from(new Set(hips));
-    const count = unique.length || 1;
-    const step = (Math.PI * 2) / count;
-    return unique.map((hip, index) => ({
-      id: hip,
-      hip,
-      name: `HIP ${hip}`,
-      ra: (index / count) * 360,
-      dec: Math.sin(step * index) * 30,
-      role: outlineHips.has(hip) ? "outline" : "context"
-    }));
+
+    // 1) Build stars with real RA/Dec when available
+    const stars = unique.map((hip, index) => {
+      const c = catalog && catalog[hip] ? catalog[hip] : null;
+
+      // fallback "fake" sky placement (your prior behavior)
+      const count = unique.length || 1;
+      const step = (Math.PI * 2) / count;
+      const fakeRa = (index / count) * 360;
+      const fakeDec = Math.sin(step * index) * 30;
+
+      return {
+        id: hip,
+        hip,
+        name: c?.name || `HIP ${hip}`,
+        ra: c ? c.ra : fakeRa,        // degrees
+        dec: c ? c.dec : fakeDec,     // degrees
+        mag: c ? c.mag : 3.5,
+        role: outlineHips.has(hip) ? "outline" : "context"
+      };
+    });
+
+    // 2) Project RA/Dec to screen x/y (simple, stable, “chart-like”)
+    //    - unwrap RA so it doesn't jump at 0/360
+    //    - flip X so it matches common Western chart orientation
+    const toRad = (d) => (d * Math.PI) / 180;
+    const meanDec = stars.reduce((a, s) => a + s.dec, 0) / (stars.length || 1);
+    const cosDec0 = Math.max(0.2, Math.cos(toRad(meanDec)));
+
+    // circular mean for RA
+    let sx = 0, sy = 0;
+    for (const s of stars) {
+      const r = toRad(s.ra);
+      sx += Math.cos(r);
+      sy += Math.sin(r);
+    }
+    const centerRa = (Math.atan2(sy, sx) * 180) / Math.PI;
+
+    // convert to local plane
+    const pts = stars.map((s) => {
+      let dra = s.ra - centerRa;
+      if (dra > 180) dra -= 360;
+      if (dra < -180) dra += 360;
+
+      const x = -dra * cosDec0; // flip for chart-like orientation
+      const y = s.dec - meanDec;
+
+      return { s, x, y };
+    });
+
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (const p of pts) {
+      minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x);
+      minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);
+    }
+
+    const spanX = (maxX - minX) || 1;
+    const spanY = (maxY - minY) || 1;
+
+    // These bounds fit your existing game layout nicely.
+    const LEFT = 140, RIGHT = 760, TOP = 120, BOTTOM = 520;
+    const scale = Math.min((RIGHT - LEFT) / spanX, (BOTTOM - TOP) / spanY);
+
+    for (const p of pts) {
+      p.s.x = LEFT + (p.x - minX) * scale;
+      p.s.y = TOP + (p.y - minY) * scale;
+    }
+
+    return stars;
   };
   const ORION_STANDARD = [
     [27989, 26727],
@@ -59,26 +118,45 @@
   const TAURUS_HIPS = TAURUS_HARD.flat();
 
   const GEMINI_STANDARD = [
-    [36850, 34693],
-    [34693, 32246],
-    [32246, 30883],
-    [30883, 31681],
-    [28734, 29655],
-    [29655, 30883],
-    [34693, 35550],
-    [35550, 34088],
-    [34088, 31681]
+    [36850, 37826],
+    [36850, 35550],
+    [35550, 37826],
+    [35550, 31681],
+    [31681, 29655],
+    [29655, 28734],
+    [35550, 32246],
+    [32246, 34088]
   ];
   const GEMINI_HARD = [
     ...GEMINI_STANDARD,
-    [35550, 36962],
+    [35550, 36046],
+    [36046, 36962],
     [36962, 37740],
     [37740, 37826],
-    [34088, 36046],
-    [32362, 29655]
+    [29655, 32362],
+    [36850, 34693]
   ];
   const GEMINI_OUTLINE = new Set(GEMINI_STANDARD.flat());
   const GEMINI_HIPS = GEMINI_HARD.flat();
+  // Gemini: real(ish) chart anchors using the values you provided earlier (J2000-ish).
+  // RA stored in DEGREES.
+  const GEMINI_CATALOG = {
+    36850: { name: "Castor (α)",  ra: ra(7, 34, 36),  dec: dec(1, 31, 53, 18), mag: 1.58 },
+    37826: { name: "Pollux (β)",  ra: ra(7, 45, 19),  dec: dec(1, 28, 1, 34), mag: 1.14 },
+    31681: { name: "Alhena (γ)",  ra: ra(6, 37, 42),  dec: dec(1, 16, 23, 57), mag: 1.93 },
+    35550: { name: "Wasat (δ)",   ra: ra(7, 20, 7),  dec: dec(1, 21, 58, 56), mag: 3.53 },
+    32246: { name: "Mebsuta (ϵ)", ra: ra(6, 43, 55),  dec: dec(1, 25, 7, 52), mag: 3.06 },
+    34088: { name: "Mekbuda (ζ)", ra: ra(7, 4, 6),  dec: dec(1, 20, 34, 13), mag: 3.79 },
+    29655: { name: "Propus (η)",  ra: ra(6, 14, 52),  dec: dec(1, 22, 30, 24), mag: 3.31 },
+    28734: { name: "Tejat (μ)",   ra: ra(6, 22, 57),  dec: dec(1, 22, 30, 49), mag: 2.87 },
+
+    // Hard extras
+    32362: { name: "Alzirr (ξ)",  ra: ra(6, 45, 17),  dec: dec(1, 12, 53, 44), mag: 3.35 },
+    34693: { name: "Tau (τ)",     ra: ra(7, 11, 8),  dec: dec(1, 30, 14, 43), mag: 4.42 },
+    36046: { name: "Iota (ι)",    ra: ra(7, 25, 43),  dec: dec(1, 27, 47, 53), mag: 3.78 },
+    36962: { name: "Upsilon (υ)", ra: ra(7, 35, 55),  dec: dec(1, 26, 53, 44), mag: 4.06 },
+    37740: { name: "Kappa (κ)",   ra: ra(7, 44, 26),  dec: dec(1, 24, 23, 53), mag: 3.57 }
+  };
 
   const CANIS_MAJOR_STANDARD = [
     [32349, 30324],
@@ -128,7 +206,7 @@
       id: "gemini",
       name: "Gemini",
       season: "winter",
-      stars: buildHipStars(GEMINI_HIPS, GEMINI_OUTLINE),
+      stars: buildHipStars(GEMINI_HIPS, GEMINI_OUTLINE, GEMINI_CATALOG),
       connectionsStandard: GEMINI_STANDARD,
       connectionsHard: GEMINI_HARD,
       info: {
