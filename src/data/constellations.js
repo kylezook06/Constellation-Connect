@@ -77,33 +77,47 @@
     return stars;
   };
   const ORION_STANDARD = [
-    [27989, 26727],
-    [25336, 25930],
+    // shoulders
+    [27989, 25336],
+
+    // belt
     [26727, 26311],
     [26311, 25930],
-    [26727, 27366],
-    [25930, 24436],
-    [27989, 25336]
+
+    // torso
+    [25336, 26727],
+    [25930, 26727],
+
+    // legs
+    [25930, 24436]
   ];
   const ORION_HARD = [
     ...ORION_STANDARD,
-    [26207, 27989],
+
+    // head / club
+    [27989, 26207],
     [26207, 25336],
-    [22449, 22509],
-    [22449, 22730],
+
+    // shield / arm detail
     [22449, 25336],
-    [27989, 28716],
+    [22449, 22730],
+    [22449, 22509],
+
+    // sword
+    [25930, 28716],
     [28716, 29426]
   ];
   const ORION_OUTLINE = new Set(ORION_STANDARD.flat());
   const ORION_HIPS = ORION_HARD.flat();
 
   const TAURUS_STANDARD = [
+    // Hyades V (face)
     [21421, 20889],
     [20889, 20455],
     [20455, 20205],
     [20205, 21421],
-    [20889, 25428],
+
+    // eye to horn base
     [21421, 26451]
   ];
   const TAURUS_HARD = [
